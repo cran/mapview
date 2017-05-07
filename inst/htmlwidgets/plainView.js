@@ -6,10 +6,11 @@ HTMLWidgets.widget({
   renderValue: function(el, x, instance) {
     var root = el;
     var filename = document.getElementById("image-1-attachment").href;
+    var legend_filename = x.legend ? document.getElementById("image-2-attachment").href : undefined;
     var name = x.imgnm;
     var crs = x.crs;
     var dims = x.dims;
-    init(root, filename, name, crs, dims);
+    init(root, filename, name, crs, dims, legend_filename);
   },
 
   resize: function(el, width, height, instance) {}
@@ -37,7 +38,7 @@ function ca(root, name, text) {
   return e;
 }
 
-function init(root, filename, name, crs, dims) {
+function init(root, filename, name, crs, dims, legend_filename) {
   rootNode = root;
   var divInfo = ca(root, "div");
   divInfo.id = "divInfo";
@@ -45,6 +46,8 @@ function init(root, filename, name, crs, dims) {
   divInfoCRS.id = "divInfoCRS";
   var divInfoZoom = ca(root, "div");
   divInfoZoom.id = "divInfoZoom";
+  var divLegend = ca(root, "div");
+  divLegend.id = "divLegend";
 
   ca(divInfoZoom, "span", "Zoom: ").className = "zoom_factor";
   spanFactor = ca(divInfoZoom, "span", "?");
@@ -72,6 +75,12 @@ function init(root, filename, name, crs, dims) {
 	canvas.onmousewheel =  onmousewheel;
 
 	window.addEventListener("keydown", onkeydown, true);
+
+	if(legend_filename !== undefined) {
+  	var legend_image = new Image();
+  	legend_image.src = legend_filename;
+  	divLegend.appendChild(legend_image);
+	}
 }
 
 function init_image() {
@@ -196,17 +205,17 @@ function onkeydown(e) {
   }
 
   if(e.which==13) { // enter key
-  var iw = image.width;
-  var ih = image.height;
-  var cw = rootNode.clientWidth;
-  var ch = rootNode.clientHeight;
-  var fw = cw/iw;
-  var fh = ch/ih;
-  scale = 1;
-  var sw = iw*scale;
-  var sh = ih*scale;
-  offsetX = sw<cw?(cw-sw)/scale/2:0;
-  offsetY = sh<ch?(ch-sh)/scale/2:0;
+    var iw = image.width;
+    var ih = image.height;
+    var cw = rootNode.clientWidth;
+    var ch = rootNode.clientHeight;
+    var fw = cw/iw;
+    var fh = ch/ih;
+    scale = 1;
+    var sw = iw*scale;
+    var sh = ih*scale;
+    offsetX = sw<cw?(cw-sw)/scale/2:0;
+    offsetY = sh<ch?(ch-sh)/scale/2:0;
     draw();
   }
 
