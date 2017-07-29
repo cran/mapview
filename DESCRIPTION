@@ -1,8 +1,8 @@
 Package: mapview
 Type: Package
 Title: Interactive Viewing of Spatial Objects in R
-Version: 2.1.0
-Date: 2017-06-28
+Version: 2.1.4
+Date: 2017-07-29
 Authors@R: c(
       person("Tim", "Appelhans", email = "tim.appelhans@gmail.com", role = c("cre", "aut")),
       person("Florian", "Detsch", email = "florian.detsch@staff.uni-marburg.de", role = c("aut")),
@@ -30,7 +30,7 @@ RoxygenNote: 6.0.1
 SystemRequirements: GNU make
 Suggests: knitr, rmarkdown, dplyr
 NeedsCompilation: yes
-Packaged: 2017-06-28 17:48:56 UTC; ede
+Packaged: 2017-07-29 12:00:14 UTC; ede
 Author: Tim Appelhans [cre, aut],
   Florian Detsch [aut],
   Christoph Reudenbach [aut],
@@ -42,4 +42,4 @@ Author: Tim Appelhans [cre, aut],
   Michael Sumner [ctb],
   Environmental Informatics Marburg [ctb]
 Repository: CRAN
-Date/Publication: 2017-06-28 22:08:28 UTC
+Date/Publication: 2017-07-29 17:53:19 UTC
