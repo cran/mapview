@@ -1,3 +1,25 @@
+mapview 2.3.0
+
+new features:
+
+  * popupTable has gained argument row.numbers to disable row numbers. #109
+  * new function addStarsImage to visualise stars images.
+  * new function addImageQuery to provide raster/stars value query on mouseover/click.
+  * mapview has gained new argument `method` to specify the method used for resampling of raster data. #123
+  
+bugfixes:
+
+  * raster method with native.crs = TRUE did throw an error on windows. #111
+  * SpatialPixelsDataFrame and SpatialGridDataFrame failed because of missing map argument.
+  * example for multiple popupImages was broken. #118
+  * SpatialPixelsDataFrame failed when `zcol` was supplied. #124
+  
+misc:
+
+  * added more details in description field as per request of Uwe Ligges.
+  * moved leaflet from Depends to Imports.
+  
+
 mapview 2.2.0
 
 new features:
@@ -8,7 +30,7 @@ new features:
   * more concise internal recursive method dispatch.
   * if multiple layers are plotted (via "+") initial zoom is now on global extent and a "Zoom full" button is added to the map at the bottom left of the map to re-zoom to this global extent.
   * we now have mapview method for class 'data.frame' which enables interactive scatter plots.
-  * we now have mapview method for class 'data.frame' which enables interactive plots of a numeric variable.
+  * we now have mapview method for class 'numeric' which enables interactive plots of a numeric variable.
   * updated slideView to accommodate more than one incident in a flexdashboard #95
   * if supplied data has only one attribute/field column mapview will now colour the plot automatically according to that attribute/field.
   * new mapview method for class 'bbox' -> mapview(st_bbox(x)) is equivalent to viewExtent(x)
