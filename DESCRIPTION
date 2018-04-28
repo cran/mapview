@@ -1,8 +1,8 @@
 Package: mapview
 Type: Package
 Title: Interactive Viewing of Spatial Data in R
-Version: 2.3.0
-Date: 2018-01-30
+Version: 2.4.0
+Date: 2018-04-28
 Authors@R: c(
       person("Tim", "Appelhans", email = "tim.appelhans@gmail.com", role = c("cre", "aut")),
       person("Florian", "Detsch", email = "florian.detsch@staff.uni-marburg.de", role = c("aut")),
@@ -13,6 +13,8 @@ Authors@R: c(
       person("Edzer", "Pebesma", role = c("ctb")),
       person("Kenton", "Russell", role = c("ctb")),
       person("Michael", "Sumner", role = c("ctb")),
+      person("Jochen", "Darley", email = "Debugger@jedimasters.de", role = c("ctb")),
+      person("Pierre", "Roudier", role = c("ctb")),
       person("Environmental Informatics Marburg", role = c("ctb"))
     )
 Maintainer: Tim Appelhans <tim.appelhans@gmail.com>
@@ -29,9 +31,9 @@ LinkingTo: Rcpp
 RoxygenNote: 6.0.1
 SystemRequirements: GNU make
 ByteCompile: yes
-Suggests: knitr, rmarkdown, dplyr, testthat, covr
+Suggests: knitr, rmarkdown, dplyr, testthat, covr, lwgeom
 NeedsCompilation: yes
-Packaged: 2018-01-30 20:08:43 UTC; ede
+Packaged: 2018-04-28 08:50:56 UTC; ede
 Author: Tim Appelhans [cre, aut],
   Florian Detsch [aut],
   Christoph Reudenbach [aut],
@@ -41,6 +43,8 @@ Author: Tim Appelhans [cre, aut],
   Edzer Pebesma [ctb],
   Kenton Russell [ctb],
   Michael Sumner [ctb],
+  Jochen Darley [ctb],
+  Pierre Roudier [ctb],
   Environmental Informatics Marburg [ctb]
 Repository: CRAN
-Date/Publication: 2018-01-30 20:45:22 UTC
+Date/Publication: 2018-04-28 09:23:07 UTC
