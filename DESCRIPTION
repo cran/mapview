@@ -1,11 +1,11 @@
 Package: mapview
 Type: Package
 Title: Interactive Viewing of Spatial Data in R
-Version: 2.4.0
-Date: 2018-04-28
+Version: 2.5.0
+Date: 2018-08-16
 Authors@R: c(
       person("Tim", "Appelhans", email = "tim.appelhans@gmail.com", role = c("cre", "aut")),
-      person("Florian", "Detsch", email = "florian.detsch@staff.uni-marburg.de", role = c("aut")),
+      person("Florian", "Detsch", email = "fdetsch@web.de", role = c("aut")),
       person("Christoph", "Reudenbach", email = "reudenbach@geo.uni-marburg.de", role = c("aut")),
       person("Stefan", "Woellauer", email = "stephan.woellauer@geo.uni-marburg.de", role = c("aut")),
       person("Spaska", "Forteva", email = "spaska.forteva@geo.uni-marburg.de", role = c("ctb")),
@@ -24,16 +24,16 @@ URL: https://github.com/r-spatial/mapview
 BugReports: https://github.com/r-spatial/mapview/issues
 LazyData: TRUE
 Depends: R (>= 2.10), methods
-Imports: leaflet, sp, raster, satellite, scales (>= 0.2.5), brew,
-        htmlwidgets, htmltools, png, Rcpp (>= 0.11.3), lattice,
-        gdalUtils, webshot, viridisLite, sf, base64enc, svglite, uuid
+Imports: leaflet(>= 1.0.0), sp, raster, satellite, scales (>= 0.2.5),
+        brew, htmlwidgets, htmltools, png, Rcpp (>= 0.11.3), lattice,
+        webshot, viridisLite, sf, stars, base64enc, svglite, uuid
 LinkingTo: Rcpp
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 SystemRequirements: GNU make
 ByteCompile: yes
 Suggests: knitr, rmarkdown, dplyr, testthat, covr, lwgeom
 NeedsCompilation: yes
-Packaged: 2018-04-28 08:50:56 UTC; ede
+Packaged: 2018-08-16 16:26:06 UTC; timpanse
 Author: Tim Appelhans [cre, aut],
   Florian Detsch [aut],
   Christoph Reudenbach [aut],
@@ -47,4 +47,4 @@ Author: Tim Appelhans [cre, aut],
   Pierre Roudier [ctb],
   Environmental Informatics Marburg [ctb]
 Repository: CRAN
-Date/Publication: 2018-04-28 09:23:07 UTC
+Date/Publication: 2018-08-16 17:40:02 UTC
