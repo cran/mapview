@@ -1,8 +1,8 @@
 Type: Package
 Package: mapview
 Title: Interactive Viewing of Spatial Data in R
-Version: 2.6.0
-Date: 2018-09-16
+Version: 2.6.3
+Date: 2018-12-19
 Authors@R: 
     c(person(given = "Tim",
              family = "Appelhans",
@@ -61,16 +61,16 @@ URL: https://github.com/r-spatial/mapview
 BugReports: https://github.com/r-spatial/mapview/issues
 Depends: methods, R (>= 2.10)
 Imports: base64enc, brew, htmltools, htmlwidgets, lattice, leaflet (>=
-        1.0.0), png, raster, Rcpp (>= 0.11.3), satellite, scales (>=
-        0.2.5), sf, sp, stars, svglite, uuid, viridisLite, webshot
-Suggests: covr, dplyr, knitr, lwgeom, rmarkdown, testthat
+        2.0.0), png, raster, Rcpp (>= 0.11.3), satellite, scales (>=
+        0.2.5), sf, sp, svglite, uuid, viridisLite, webshot
+Suggests: covr, dplyr, knitr, lwgeom, rmarkdown, stars, testthat
 LinkingTo: Rcpp
 ByteCompile: yes
 LazyData: TRUE
 RoxygenNote: 6.1.0
 SystemRequirements: GNU make
 NeedsCompilation: yes
-Packaged: 2018-09-16 15:47:54 UTC; timpanse
+Packaged: 2018-12-19 16:28:14 UTC; timpanse
 Author: Tim Appelhans [cre, aut],
   Florian Detsch [aut],
   Christoph Reudenbach [aut],
@@ -85,4 +85,4 @@ Author: Tim Appelhans [cre, aut],
   Patrick Schratz [ctb],
   Environmental Informatics Marburg [ctb]
 Repository: CRAN
-Date/Publication: 2018-09-16 16:30:02 UTC
+Date/Publication: 2018-12-19 23:40:03 UTC
