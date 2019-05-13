@@ -23,7 +23,7 @@ if ( !isGeneric('mapView') ) {
 #'
 #' @param x a \code{Raster*} or \code{Spatial*} or \code{Satellite} or
 #' \code{sf} object or a list of any combination of those. Furthermore,
-#' this can also be a \code{data.frame} or a \code{numeric vector}. If missing,
+#' this can also be a \code{data.frame}, a \code{numeric vector}. If missing,
 #' a blank map will be drawn.
 #' @param map an optional existing map to be updated/added to.
 #' @param band for stars layers, the band number to be plotted.
@@ -67,7 +67,7 @@ if ( !isGeneric('mapView') ) {
 #' @param homebutton logical, whether to add a zoom-to-layer button to the map.
 #' Defaults to TRUE
 #' @param popup a \code{list} of HTML strings with the popup contents, usually
-#' created from \code{\link{popupTable}}. See \code{\link{addControl}} for
+#' created from \code{\link[leafpop]{popupTable}}. See \code{\link{addControl}} for
 #' details.
 #' @param label For vector data (sf/sp) a character vector of labels to be
 #' shown on mouseover. See \code{\link{addControl}} for details. For raster
@@ -146,7 +146,11 @@ if ( !isGeneric('mapView') ) {
 #' mapview(pl1)
 #'
 #' ## raster ==============================================================
-#' mapview(poppendorf[[5]])
+#' if (interactive()) {
+#'   library(plainview)
+#'
+#'   mapview(plainview::poppendorf[[5]])
+#' }
 #'
 #' ## spatial objects =====================================================
 #' mapview(leaflet::gadmCHE)
@@ -510,7 +514,7 @@ setMethod('mapView', signature(x = 'sf'),
                    na.alpha = regionOpacity(x),
                    map.types = NULL,
                    verbose = mapviewGetOption("verbose"),
-                   popup = popupTable(x),
+                   popup = leafpop::popupTable(x),
                    layer.name = NULL,
                    label = makeLabels(x, zcol),
                    legend = mapviewGetOption("legend"),
@@ -709,6 +713,76 @@ setMethod('mapView', signature(x = 'sfc'),
 )
 
 
+# ## character ==============================================================
+# #' @param tms whether the tiles are served as TMS tiles.
+# #'
+# #' @describeIn mapView \code{\link{character}}
+# setMethod('mapView', signature(x = 'character'),
+#           function(x,
+#                    map = NULL,
+#                    tms = TRUE,
+#                    color = standardColor(),
+#                    col.regions = standardColRegions(),
+#                    at = NULL,
+#                    na.color = mapviewGetOption("na.color"),
+#                    cex = 6,
+#                    lwd = 2,
+#                    alpha = 0.9,
+#                    alpha.regions = 0.6,
+#                    na.alpha = 0.6,
+#                    map.types = NULL,
+#                    verbose = FALSE,
+#                    layer.name = x,
+#                    homebutton = TRUE,
+#                    native.crs = FALSE,
+#                    canvas = FALSE,
+#                    viewer.suppress = FALSE,
+#                    ...) {
+#
+#             if (mapviewGetOption("platform") == "leaflet") {
+#               if (utils::file_test("-d", x)) {
+#                 leaflet_tiles(x = x,
+#                               map = map,
+#                               tms = tms,
+#                               map.types = map.types,
+#                               verbose = verbose,
+#                               layer.name = layer.name,
+#                               homebutton = homebutton,
+#                               native.crs = native.crs,
+#                               viewer.suppress = viewer.suppress,
+#                               ...)
+#               } else if (utils::file_test("-f", x)) {
+#
+#                 layer.name = basename(tools::file_path_sans_ext(layer.name))
+#
+#                 leaflet_file(x = x,
+#                              map = map,
+#                              color = color,
+#                              col.regions = col.regions,
+#                              at = at,
+#                              na.color = na.color,
+#                              cex = cex,
+#                              lwd = lwd,
+#                              alpha = alpha,
+#                              alpha.regions = alpha.regions,
+#                              na.alpha = na.alpha,
+#                              map.types = map.types,
+#                              verbose = verbose,
+#                              layer.name = layer.name,
+#                              homebutton = homebutton,
+#                              native.crs = native.crs,
+#                              canvas = canvas,
+#                              viewer.suppress = viewer.suppress,
+#                              ...)
+#
+#               } else {
+#                 stop(sprintf("%s is not a directory!", layer.name),
+#                      call. = FALSE)
+#               }
+#             }
+#           }
+# )
+
 ## numeric ================================================================
 #' @describeIn mapView \code{\link{numeric}}
 #' @param y numeric vector.
@@ -761,7 +835,7 @@ setMethod('mapView', signature(x = 'data.frame'),
                    ycol,
                    grid = TRUE,
                    aspect = 1,
-                   popup = popupTable(x),
+                   popup = leafpop::popupTable(x),
                    label,
                    crs = NA,
                    ...) {
@@ -959,7 +1033,7 @@ setMethod('mapView', signature(x = 'list'),
                    map.types = mapviewGetOption("basemaps"),
                    verbose = mapviewGetOption("verbose"),
                    popup = lapply(seq(x), function(i) {
-                     popupTable(x[[i]])
+                     leafpop::popupTable(x[[i]])
                    }),
                    layer.name = deparse(substitute(x,
                                                    env = parent.frame())),
@@ -1001,7 +1075,7 @@ setMethod('mapView', signature(x = 'list'),
 
             if (mapviewGetOption("platform") == "leaflet") {
               m <- Reduce("+", lapply(seq(x), function(i) {
-                if (is.null(popup)) popup <- popupTable(x[[i]])
+                if (is.null(popup)) popup <- leafpop::popupTable(x[[i]])
                 if (inherits(x[[i]], "sf")) {
                   mapView(x = sf::st_cast(x[[i]]),
                           layer.name = lyrnms[[i]],

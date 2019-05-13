@@ -18,8 +18,9 @@ if ( !isGeneric('+') ) {
 #' '+'(m2, m1)
 #'
 #' ### add layers to a mapview object
-#' \dontrun{
-#' m1 + breweries + poppendorf[[4]]
+#' if (interactive()) {
+#'   library(plainview)
+#'   m1 + breweries + plainview::poppendorf[[4]]
 #' }
 #'
 #' @name +
@@ -46,7 +47,7 @@ setMethod("+",
             zf = grep("Zoom full", m$x$calls[hbcalls])
             ind = hbcalls[zf]
             if (length(zf) > 0) m$x$calls[ind] = NULL
-            m = addZoomFullButton(m, out_obj)
+            m = leafem:::addZoomFullButton(m, out_obj)
 
             out <- methods::new('mapview', object = out_obj, map = m)
             return(out)

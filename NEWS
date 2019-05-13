@@ -1,3 +1,16 @@
+mapview 2.7.0
+
+miscellaneous:
+
+  * addMouseCoordinates now also displays native coordinates for leaflet maps. #205 - now moved to package leafem.
+  * deprecated slideview, cubeview, latticeview & sync, plainview, popup* functions.
+  * deprecated addFeatures, garnishMap, addHomeButton, addImageQuery, addLogo, addMouseCoordinates.
+
+bugfixes:
+
+  * mapview would return NULL if zcol was of type logic. #200
+
+
 mapview 2.6.3
 
 miscellaneous:

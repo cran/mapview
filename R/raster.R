@@ -39,16 +39,25 @@ leafletRL = function(x,
                quietly = TRUE, USE.NAMES = FALSE)
 
   if (native.crs) {
-    plainView(x,
-              maxpixels = mapviewGetOption("plainview.maxpixels"),
-              col.regions = col.regions,
-              at = at,
-              na.color = na.color,
-              legend = legend,
-              verbose = verbose,
-              layer.name = layer.name,
-              gdal = TRUE,
-              ...)
+
+    if (!requireNamespace("plainview", quietly = TRUE)) {
+      stop(
+        paste("\nviewing rasters with native CRS requires package 'plainview'.\n",
+              "To install use install.packages('plainview')"),
+        call. = FALSE
+      )
+    }
+
+    plainview::plainView(x,
+                         maxpixels = mapviewGetOption("plainview.maxpixels"),
+                         col.regions = col.regions,
+                         at = at,
+                         na.color = na.color,
+                         legend = legend,
+                         verbose = verbose,
+                         layer.name = layer.name,
+                         gdal = TRUE,
+                         ...)
   } else {
 
     is.fact = raster::is.factor(x)
@@ -117,9 +126,9 @@ leafletRL = function(x,
                                 layerId = grp,
                                 ...)
     if (label)
-      m = addImageQuery(m, x, group = grp, layerId = grp,
-                        type = query.type, digits = query.digits,
-                        position = query.position, prefix = query.prefix)
+      m = leafem::addImageQuery(m, x, group = grp, layerId = grp,
+                                type = query.type, digits = query.digits,
+                                position = query.position, prefix = query.prefix)
     if (legend) {
       ## add legend
       # m = leaflet::addLegend(map = m,
@@ -144,11 +153,11 @@ leafletRL = function(x,
     sclbrpos = getCallEntryFromMap(m, "addScaleBar")
     if (length(sclbrpos) > 0 | native.crs) scalebar = FALSE else scalebar = TRUE
     if (scalebar) m = leaflet::addScaleBar(m, position = "bottomleft")
-    m = addMouseCoordinates(m)
+    m = leafem::addMouseCoordinates(m)
 
 
 
-    if (homebutton) m = addHomeButton(m, ext, layer.name = layer.name)
+    if (homebutton) m = leafem::addHomeButton(m, ext, layer.name = layer.name)
 
     out = new('mapview', object = list(x), map = m)
 
