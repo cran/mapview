@@ -15,7 +15,7 @@ factorLegend <- function(map,
                          colors,
                          na.color,
                          layer.name) {
-  pal <- factorPalette(palette = zcolColors(x = levels(values),
+  pal <- factorPalette(palette = zcolColors(x = values,
                                             colors = colors,
                                             na.color = na.color,
                                             return.sorted = TRUE),
@@ -28,7 +28,7 @@ factorLegend <- function(map,
               pal = pal,
               values = values,
               opacity = 1,
-              title = layer.name)
+              title = ifelse(length(values) > 1, layer.name, ""))
 
 }
 
@@ -57,7 +57,7 @@ characterLegend <- function(map,
               pal = pal,
               values = values,
               opacity = 1,
-              title = layer.name)
+              title = ifelse(length(values) > 1, layer.name, ""))
 }
 
 
@@ -117,7 +117,7 @@ numericLegend <- function(map,
                 pal = pal,
                 values = values,
                 opacity = 1,
-                title = layer.name)
+                title = ifelse(length(values) > 1, layer.name, ""))
 
   } else {
     pal <- numericPalette(palette = colors(n_unique),
@@ -130,7 +130,7 @@ numericLegend <- function(map,
                 pal = pal,
                 values = values,
                 opacity = 1,
-                title = layer.name)
+                title = ifelse(length(values) > 1, layer.name, ""))
 
   }
 }
@@ -142,7 +142,7 @@ mvAddLegend = function(grp_avail = isAvailableInLeaflet()$leggrp,
     leaflet::addLegend(...)
 }
 
-
+#' @importFrom stats na.omit
 ### mapviewLegend =========================================================
 mapviewLegend <- function(values,
                           colors,
@@ -151,17 +151,68 @@ mapviewLegend <- function(values,
                           layer.name,
                           position = mapviewGetOption("legend.pos")) {
 
-  if (!is.function(colors) &
-      inherits(colors, "character") &
-      !length(colors) == length(values)) {
-    colors <- grDevices::colorRampPalette(colors)
+  ## factor
+  ## if character convert to factor
+  if (inherits(values, "character")) {
+    values = as.factor(values)
+  }
+
+  ## numeric
+  ## if interger convert to numeric
+  if (inherits (values, "integer")) {
+    values = as.numeric(values)
+  }
+
+  if (length(colors) > 1) {
+
+    if (inherits(values, "factor")) {
+      if (length(values) == length(colors)) {
+        values = unique(droplevels(values))
+        colors = unique(colors)[as.numeric(values)]
+      } else if (length(levels(values)) >= length(unique(colors))) {
+        values = unique(values)
+        colors = as.vector(stats::na.omit(colors[levels(values) %in% values]))
+        values = droplevels(values)
+      } else {
+        values = unique(droplevels(values))
+        colors = unique(colors)
+      }
+
+      if (length(colors) > length(values)) {
+        colors = colors[1:length(values)]
+      } else if (length(colors) < length(values)) {
+        colors = rep_len(colors, length(values))
+      }
+
+    }
+
+    if (inherits(values, "numeric")) {
+      values = unique(values)
+      colors = unique(colors)
+
+      if (length(colors) > length(values)) {
+        colors = grDevices::colorRampPalette(colors[1:length(values)])
+      } else if (length(colors) < length(values)) {
+        colors = grDevices::colorRampPalette(colors)
+      }
+      if (length(colors) == length(values)) {
+        colors = colors[order(values)]
+        values = as.factor(values)
+      }
+    }
+
+
   }
 
   function(map) {
-    switch(class(values),
+
+    # if values inherits from more than one class, select
+    value.class = class(values)[length(class(values))]
+
+    switch(value.class,
            factor = factorLegend(map,
                                  position = position,
-                                 values = values,
+                                 values = levels(values),
                                  colors = colors,
                                  na.color = na.color,
                                  layer.name = layer.name),
@@ -270,10 +321,19 @@ addRasterLegend <- function(x,
                             col.regions,
                             na.color) {
 
-  is.fact <- is.factor(x)
+  is.fact <- if (inherits(x, "stars"))
+		is.factor(x[[1]])
+  	else
+		is.factor(x)
 
   if (is.fact) {
     vals <- as.character(x[])
+  } else if (inherits(x, "stars")) {
+	stopifnot (length(dim(x)) <= 3)
+	if (length(dim(x)) == 3)
+    	vals = as.vector(x[, , , 1][[1]][])
+	else
+    	vals = as.vector(x[[1]])
   } else {
     vals <- x[] # orig values needed for legend creation later on
   }
@@ -297,6 +357,7 @@ addRasterLegend <- function(x,
   if (is.fact) {
     pal2 <- leaflet::colorFactor(palette = col.regions,
                                  domain = at,
+                                 # levels = as.character(levels(x)[[1]][, 2]),
                                  na.color = col2Hex(na.color))
   } else {
     if (length(at) > 11) {

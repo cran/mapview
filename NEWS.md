@@ -1,3 +1,23 @@
+## mapview 2.7.8
+
+new features:
+
+  * new method for tiled image collections (created with e.g. gdal2tiles). #222
+  * new method file path (currently vector only) without loading into R.
+  * initial support for 'mapdeck' as a rendering platform.
+  * mapshot now works for all and any htmlwidget.
+  * new functions startWatching/stopWatching to automatically mapview all spatial objects in a given environment (default .GlaobalEnv).
+  
+miscellaneous:
+
+  * deprecated addStarsImage - now in package leafem. Thanks to Luigi Ranghetti #230
+  * deprecated addExtent - now in package leafem. Thanks to Lorenzo Busetto #233
+  * dropped Rcpp dependency.
+  
+bugfixes:
+
+  * factor legends should now work as expected. #240
+
 ## mapview 2.7.0
 
 miscellaneous:
