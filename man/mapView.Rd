@@ -5,6 +5,7 @@
 \alias{mapView}
 \alias{mapView,RasterLayer-method}
 \alias{mapView,stars-method}
+\alias{mapView,stars_proxy-method}
 \alias{mapView,RasterStackBrick-method}
 \alias{mapView,Satellite-method}
 \alias{mapView,sf-method}
@@ -84,6 +85,36 @@
   query.position = mapviewGetOption("query.position"),
   query.prefix = mapviewGetOption("query.prefix"),
   viewer.suppress = mapviewGetOption("viewer.suppress"),
+  pane = "auto",
+  ...
+)
+
+\S4method{mapView}{stars_proxy}(
+  x,
+  band = 1,
+  map = NULL,
+  maxpixels = mapviewGetOption("mapview.maxpixels"),
+  col.regions = mapviewGetOption("raster.palette"),
+  at = NULL,
+  na.color = mapviewGetOption("na.color"),
+  use.layer.names = mapviewGetOption("use.layer.names"),
+  map.types = mapviewGetOption("basemaps"),
+  alpha.regions = 0.8,
+  legend = mapviewGetOption("legend"),
+  legend.opacity = 1,
+  trim = mapviewGetOption("trim"),
+  verbose = mapviewGetOption("verbose"),
+  layer.name = NULL,
+  homebutton = mapviewGetOption("homebutton"),
+  native.crs = mapviewGetOption("native.crs"),
+  method = mapviewGetOption("method"),
+  label = TRUE,
+  query.type = mapviewGetOption("query.type"),
+  query.digits = mapviewGetOption("query.digits"),
+  query.position = mapviewGetOption("query.position"),
+  query.prefix = mapviewGetOption("query.prefix"),
+  viewer.suppress = mapviewGetOption("viewer.suppress"),
+  pane = "auto",
   ...
 )
 
@@ -100,14 +131,14 @@
   legend.opacity = 1,
   trim = TRUE,
   verbose = mapviewGetOption("verbose"),
-  homebutton = TRUE,
+  homebutton = mapviewGetOption("homebutton"),
   method = mapviewGetOption("method"),
   label = TRUE,
   query.type = c("mousemove", "click"),
   query.digits,
   query.position = mapviewGetOption("query.position"),
   query.prefix = "Layer",
-  viewer.suppress = FALSE,
+  viewer.suppress = mapviewGetOption("viewer.suppress"),
   ...
 )
 
@@ -123,7 +154,7 @@
   legend.opacity = 1,
   trim = TRUE,
   verbose = mapviewGetOption("verbose"),
-  homebutton = TRUE,
+  homebutton = mapviewGetOption("homebutton"),
   method = c("bilinear", "ngb"),
   label = TRUE,
   ...
@@ -134,7 +165,7 @@
   map = NULL,
   pane = "auto",
   canvas = useCanvas(x),
-  viewer.suppress = canvas,
+  viewer.suppress = mapviewGetOption("viewer.suppress"),
   zcol = NULL,
   burst = FALSE,
   color = mapviewGetOption("vector.palette"),
@@ -146,14 +177,14 @@
   alpha = 0.9,
   alpha.regions = regionOpacity(x),
   na.alpha = regionOpacity(x),
-  map.types = NULL,
+  map.types = mapviewGetOption("basemaps"),
   verbose = mapviewGetOption("verbose"),
-  popup = leafpop::popupTable(x),
+  popup = TRUE,
   layer.name = NULL,
-  label = makeLabels(x, zcol),
+  label = zcol,
   legend = mapviewGetOption("legend"),
   legend.opacity = 1,
-  homebutton = TRUE,
+  homebutton = mapviewGetOption("homebutton"),
   native.crs = FALSE,
   highlight = mapviewHighlightOptions(x, alpha.regions, alpha, lwd),
   maxpoints = getMaxFeatures(x),
@@ -165,7 +196,7 @@
   map = NULL,
   pane = "auto",
   canvas = useCanvas(x),
-  viewer.suppress = canvas,
+  viewer.suppress = mapviewGetOption("viewer.suppress"),
   color = standardColor(x),
   col.regions = standardColRegions(x),
   at = NULL,
@@ -174,14 +205,14 @@
   lwd = lineWidth(x),
   alpha = 0.9,
   alpha.regions = regionOpacity(x),
-  map.types = NULL,
+  map.types = mapviewGetOption("basemaps"),
   verbose = mapviewGetOption("verbose"),
   popup = NULL,
   layer.name = deparse(substitute(x, env = parent.frame())),
   label = makeLabels(x),
   legend = mapviewGetOption("legend"),
   legend.opacity = 1,
-  homebutton = TRUE,
+  homebutton = mapviewGetOption("homebutton"),
   native.crs = FALSE,
   highlight = mapviewHighlightOptions(x, alpha.regions, alpha, lwd),
   maxpoints = getMaxFeatures(x),
@@ -201,13 +232,13 @@
   alpha = 0.9,
   alpha.regions = 0.6,
   na.alpha = 0.6,
-  map.types = NULL,
+  map.types = mapviewGetOption("basemaps"),
   verbose = FALSE,
   layer.name = x,
-  homebutton = TRUE,
+  homebutton = mapviewGetOption("homebutton"),
   native.crs = FALSE,
   canvas = FALSE,
-  viewer.suppress = FALSE,
+  viewer.suppress = mapviewGetOption("viewer.suppress"),
   ...
 )
 
@@ -230,7 +261,7 @@
   map = NULL,
   pane = "auto",
   canvas = useCanvas(x),
-  viewer.suppress = canvas,
+  viewer.suppress = mapviewGetOption("viewer.suppress"),
   color = standardColor(x),
   col.regions = standardColRegions(x),
   at = NULL,
@@ -239,14 +270,14 @@
   lwd = lineWidth(x),
   alpha = 0.9,
   alpha.regions = regionOpacity(x),
-  map.types = NULL,
+  map.types = mapviewGetOption("basemaps"),
   verbose = mapviewGetOption("verbose"),
   popup = NULL,
   layer.name = deparse(substitute(x, env = parent.frame(1))),
   label = makeLabels(x),
   legend = mapviewGetOption("legend"),
   legend.opacity = 1,
-  homebutton = TRUE,
+  homebutton = mapviewGetOption("homebutton"),
   native.crs = FALSE,
   highlight = mapviewHighlightOptions(x, alpha.regions, alpha, lwd),
   maxpoints = getMaxFeatures(x),
@@ -273,7 +304,25 @@
 \S4method{mapView}{list}(
   x,
   map = NULL,
+  zcol = NULL,
+  burst = FALSE,
+  color = mapviewGetOption("vector.palette"),
+  col.regions = mapviewGetOption("vector.palette"),
+  at = NULL,
+  na.color = mapviewGetOption("na.color"),
+  cex = 6,
+  lwd = lapply(x, lineWidth),
+  alpha = 0.9,
+  alpha.regions = lapply(x, regionOpacity),
+  na.alpha = lapply(x, regionOpacity),
+  map.types = mapviewGetOption("basemaps"),
+  verbose = mapviewGetOption("verbose"),
+  popup = ifelse(isTRUE(mapviewGetOption("fgb")), TRUE, lapply(x, leafpop::popupTable)),
   layer.name = deparse(substitute(x, env = parent.frame())),
+  label = lapply(x, makeLabels),
+  legend = mapviewGetOption("legend"),
+  homebutton = mapviewGetOption("homebutton"),
+  native.crs = FALSE,
   ...
 )
 
@@ -295,7 +344,7 @@
   trim = TRUE,
   verbose = mapviewGetOption("verbose"),
   layer.name = NULL,
-  homebutton = TRUE,
+  homebutton = mapviewGetOption("homebutton"),
   native.crs = FALSE,
   method = mapviewGetOption("method"),
   label = TRUE,
@@ -303,7 +352,7 @@
   query.digits,
   query.position = "topright",
   query.prefix = "Layer",
-  viewer.suppress = FALSE,
+  viewer.suppress = mapviewGetOption("viewer.suppress"),
   ...
 )
 
@@ -323,7 +372,7 @@
   trim = TRUE,
   verbose = mapviewGetOption("verbose"),
   layer.name = NULL,
-  homebutton = TRUE,
+  homebutton = mapviewGetOption("homebutton"),
   native.crs = FALSE,
   method = mapviewGetOption("method"),
   label = TRUE,
@@ -331,7 +380,7 @@
   query.digits,
   query.position = "topright",
   query.prefix = "Layer",
-  viewer.suppress = FALSE,
+  viewer.suppress = mapviewGetOption("viewer.suppress"),
   ...
 )
 
@@ -349,7 +398,7 @@
 }
 \arguments{
 \item{x}{a \code{Raster*} or \code{Spatial*} or \code{Satellite} or
-\code{sf} object or a list of any combination of those. Furthermore,
+\code{sf} or \code{stars} object or a list of any combination of those. Furthermore,
   this can also be a \code{data.frame}, a \code{numeric vector} or a
 \code{character string} pointing to a tile image folder or file on disk.
   If missing, a blank map will be drawn. A value of NULL will return NULL.}
@@ -370,7 +419,7 @@ See \code{\link{levelplot}} for details.}
 \item{use.layer.names}{should layer names of the Raster* object be used?}
 
 \item{map.types}{character spcifications for the base maps.
-see \url{http://leaflet-extras.github.io/leaflet-providers/preview/}
+see \url{https://leaflet-extras.github.io/leaflet-providers/preview/}
 for available options.}
 
 \item{alpha.regions}{opacity of the fills of points, polygons or raster layer(s)}
@@ -465,9 +514,13 @@ of the column(s) to be used for defining the size of circles}
 
 \item{na.alpha}{opacity of missing values}
 
-\item{popup}{a \code{list} of HTML strings with the popup contents, usually
-created from \code{\link[leafpop]{popupTable}}. See \code{\link{addControl}} for
-details.}
+\item{popup}{either \code{logical}, \code{character vector} or a \code{list}
+of HTML strings with the popup contents, usually created from
+\code{\link[leafpop]{popupTable}}. See \code{\link{addControl}} for details.
+If \code{FALSE} or \code{NULL} no popups will be created, if \code{TRUE}
+a table with all feature attributes/columns will be created.
+If a \code{character vector} of column names, the table will only show the
+respective column entries.}
 
 \item{highlight}{either \code{FALSE}, \code{NULL} or a list of styling
 options for feature highlighting on mouse hover.
@@ -533,7 +586,9 @@ the popup will potentially still say something like "POLYGON Z".
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{stars}: \code{\link{stars}}
+\item \code{stars}: \code{stars}
+
+\item \code{stars_proxy}: \code{stars_proxy}
 
 \item \code{RasterStackBrick}: \code{\link{stack}} / \code{\link{brick}}
 

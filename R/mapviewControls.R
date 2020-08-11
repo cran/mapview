@@ -41,6 +41,8 @@ makeLabels <- function(x, zcol = NULL) {
     lab <- as.character(seq(length(x)))
   } else if (inherits(x, "sf") & is.null(zcol)) {
     lab <- rownames(x)
+  } else if (inherits(x, "Raster")) {
+    lab = TRUE
   } else lab <- as.character(as.data.frame(x)[, zcol])
   return(lab)
 }
@@ -124,6 +126,11 @@ getSFClass <- function(x) {
 
 
 getGeometryType <- function(x) {
+  # raster / stars
+  if (inherits(x, c("Raster", "stars"))) {
+    return("rs")
+  }
+
   # sf
   if (inherits(x, "Spatial")) x = sf::st_as_sfc(x)
   g <- sf::st_geometry(x)
@@ -156,20 +163,23 @@ getMaxFeatures <- function(x) {
 
 lineWidth <- function(x) {
   lw = switch(getGeometryType(x),
-              "pt" = 2,
+              "pt" = 1,
               "ln" = 2,
-              "pl" = 1,
+              "pl" = 0.5,
               "gc" = 2)
   return(lw)
 }
 
 
 regionOpacity <- function(x) {
-  switch(getGeometryType(x),
-         "pt" = 0.6,
-         "ln" = 1,
-         "pl" = 0.6,
-         "gc" = 0.6)
+  switch(
+    getGeometryType(x)
+    , "pt" = ifelse(mapviewGetOption("platform") == "leafgl", 0.8, 0.6)
+    , "ln" = 1
+    , "pl" = ifelse(mapviewGetOption("platform") == "leafgl", 0.8, 0.6)
+    , "gc" = ifelse(mapviewGetOption("platform") == "leafgl", 0.8, 0.6)
+    , "rs" = 0.8
+  )
 }
 
 
@@ -273,6 +283,9 @@ makeListLayerNames = function(x, layer.name) {
 
 
 paneName = function(x) {
+  if (inherits(x, "stars")) {
+    return("stars")
+  }
   switch(getGeometryType(x),
          "pt" = "point",
          "ln" = "line",
@@ -281,6 +294,9 @@ paneName = function(x) {
 }
 
 zIndex = function(x) {
+  if (inherits(x, "stars")) {
+    return(400)
+  }
   switch(getGeometryType(x),
          "pt" = 440,
          "ln" = 430,
@@ -310,4 +326,60 @@ is_literally_false = function(x) {
   } else {
     is.logical(x) && length(x) == 1L && !is.na(x) && !x
   }
+}
+
+listifyer = function(x, by_row = FALSE) {
+  if (by_row) {
+    strct = sapply(x, function(i) {
+      if (inherits(i, "sfc")) {
+        length(i)
+      }
+      if (inherits(i, "sf")) {
+        nrow(i)
+      }
+    })
+    idx = rep(1:length(x), times = strct)
+    return(
+      function(arg) {
+        arg_nm = deparse(substitute(arg))
+        arg = unlist(arg)
+        if (length(arg) == 1) {
+          return(rep(arg, length(idx)))
+        }
+        if (length(arg) > 1 && length(arg) <= length(idx)) {
+          splt = split(arg, idx)
+          if (arg_nm == "popup") {
+            splt = sapply(splt, function(i) {
+              attr(i, "popup") = "leafpop"
+              return(i)
+            })
+          }
+          return(splt)
+        }
+      }
+    )
+  }
+
+  idx = length(x)
+  function(arg, as_list = FALSE) {
+    arg_nm = deparse(substitute(arg))
+    if (inherits(x[[1]], c("Raster", "stars")) &&
+        arg_nm %in% c("popup")) {
+      return(NULL)
+    }
+    if (as_list) {
+      return(as.list(arg))
+    }
+    if (is.function(arg)) {
+      return(replicate(idx, arg))
+    }
+    if (is.list(arg) && length(arg) == idx) {
+      return(arg)
+    }
+    if (!is.list(arg) && length(arg) == idx) {
+      return(as.list(arg))
+    }
+    return(rep(list(arg), idx))
+  }
+
 }

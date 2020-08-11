@@ -10,7 +10,13 @@ getLayerControlEntriesFromMap <- function(map) {
 
 
 getCallEntryFromMap <- function(map, call) {
-  grep(call, getCallMethods(map), fixed = TRUE, useBytes = TRUE)
+  if (length(call) > 1) {
+    call = paste(call, collapse = "|")
+    fixed = FALSE
+  } else {
+    fixed = TRUE
+  }
+  grep(call, getCallMethods(map), fixed = fixed, useBytes = TRUE)
 }
 
 
@@ -217,12 +223,20 @@ initBaseMaps <- function(map.types, canvas = FALSE, viewer.suppress = FALSE) {
       browser.external = viewer.suppress
     )
   )
-  m <- leaflet::addProviderTiles(m, provider = map.types[1],
-                                 layerId = lid[1], group = map.types[1])
-  if (length(map.types) > 1) {
-    for (i in 2:length(map.types)) {
-      m <- leaflet::addProviderTiles(m, provider = map.types[i],
-                                     layerId = lid[i], group = map.types[i])
+  if (!(is.null(map.types))) {
+    m <- leaflet::addProviderTiles(m, provider = map.types[1],
+                                   layerId = map.types[1], group = map.types[1],
+                                   options = providerTileOptions(
+                                     pane = "tilePane"
+                                   ))
+    if (length(map.types) > 1) {
+      for (i in 2:length(map.types)) {
+        m <- leaflet::addProviderTiles(m, provider = map.types[i],
+                                       layerId = map.types[i], group = map.types[i],
+                                       options = providerTileOptions(
+                                         pane = "tilePane"
+                                       ))
+      }
     }
   }
   return(m)
@@ -244,11 +258,11 @@ initMap <- function(map = NULL,
   ls = list(...)
   nms = names(ls)
 
-  if (platform == "leaflet") {
+  if (platform %in% c("leaflet", "leafgl")) {
 
-    if (is.null(map) & is.null(map.types)) {
-      map.types <- mapviewGetOption("basemaps")
-    }
+    # if (is.null(map) & is.null(map.types)) {
+    #   map.types <- mapviewGetOption("basemaps")
+    # }
 
     leafletHeight <- mapviewGetOption("leafletHeight")
     leafletWidth <- mapviewGetOption("leafletWidth")
@@ -262,6 +276,7 @@ initMap <- function(map = NULL,
           width = leafletWidth,
           options = leaflet::leafletOptions(
             minZoom = -1000,
+            maxZoom = 52,
             crs = leafletCRS(crsClass = "L.CRS.Simple"),
             preferCanvas = canvas),
           sizingPolicy = leafletSizingPolicy(
@@ -477,7 +492,7 @@ mapViewLayersControl <- function(map, map.types, names, native.crs = FALSE) {
   ind = getCallEntryFromMap(map, call = "addLayersControl")
 
   if (!length(ind)) {
-    bgm <- map.types
+    if (!(is.null(map.types))) bgm = map.types else bgm = character(0)
   } else {
     bgm <- map$x$calls[[ind[1]]]$args[[1]]
   }

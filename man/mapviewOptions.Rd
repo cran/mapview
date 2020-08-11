@@ -20,6 +20,7 @@ mapviewOptions(
   leafletHeight,
   viewer.suppress,
   homebutton,
+  homebutton.pos,
   native.crs,
   raster.size,
   mapview.maxpixels,
@@ -39,7 +40,8 @@ mapviewOptions(
   alpha,
   default = FALSE,
   console = TRUE,
-  watch = FALSE
+  watch = FALSE,
+  fgb
 )
 
 mapviewGetOption(param)
@@ -49,7 +51,7 @@ mapviewGetOption(param)
 Current options are "leaflet" and "mapdeck".}
 
 \item{basemaps}{character. The basemaps to be used for rendering data. See
-\url{http://leaflet-extras.github.io/leaflet-providers/preview/} for possible
+\url{https://leaflet-extras.github.io/leaflet-providers/preview/} for possible
 values}
 
 \item{raster.palette}{a color palette function for raster visualisation.
@@ -81,6 +83,9 @@ placed? One of "topleft", "topright", "bottomleft", "bottomright".}
 or the RStudio viewer (\code{FALSE}).}
 
 \item{homebutton}{logical, whether to add a zoom-to-layer button to the map.}
+
+\item{homebutton.pos}{character. Where should the homebutton(s) be
+placed? One of "topleft", "topright", "bottomleft", "bottomright".}
 
 \item{native.crs}{logical whether to reproject to web map coordinate
 reference system (web mercator - epsg:3857) or render using native CRS of
@@ -158,8 +163,17 @@ of the column(s) to be used for defining the size of circles.}
 \item{console}{logical. Should the options be printed to the console}
 
 \item{watch}{whether to watch a certain environment and automatically
-render cahnges to the list of spatial data in that environment. See
+render changes to the list of spatial data in that environment. See
 \link{mapviewWatcher} for details.}
+
+\item{fgb}{if set to \code{TRUE} mapview will not use 'clasical' leaflet/htmlwidgets
+rendering (which embeds data directly in the html) but leverage the speed of
+a file format called flatgeobuf (hence, fgb). This has the added benefit that
+data is being streamed onto the map, which makes for a pleasant user experience.
+It should also help to visualise larger data sets due to a reduced memeory footprint.
+A note of warning, data will be attached to the html
+via a <src=...> call which means that the html is not selfcontained anymore
+(so it cannot be used without an accompanying folder).}
 
 \item{param}{character. parameter to be queried.}
 }

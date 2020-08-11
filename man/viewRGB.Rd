@@ -22,7 +22,7 @@ viewRGB(
 )
 }
 \arguments{
-\item{x}{a RasterBrick or RasterStack}
+\item{x}{a RasterBrick, RasterStack or stars}
 
 \item{r}{integer. Index of the Red channel/band, between 1 and nlayers(x)}
 
@@ -38,7 +38,7 @@ viewRGB(
 If maxpixels < \code{ncell(x)}, sampleRegular is used before plotting.}
 
 \item{map.types}{character spcifications for the base maps.
-see \url{http://leaflet-extras.github.io/leaflet-providers/preview/}
+see \url{https://leaflet-extras.github.io/leaflet-providers/preview/}
 for available options.}
 
 \item{na.color}{the color to be used for NA pixels}
@@ -55,7 +55,7 @@ which is appropriate for continuous variables. The other option, 'ngb'
 \item{...}{additional arguments passed on to \code{\link{mapView}}}
 }
 \description{
-Make a Red-Green-Blue plot based on three layers (in a RasterBrick or RasterStack).
+Make a Red-Green-Blue plot based on three layers (in a RasterBrick, RasterStack or stars).
 Three layers (sometimes referred to as "bands" because they may represent
 different bandwidths in the electromagnetic spectrum) are combined such
 that they represent the red, green and blue channel. This function can

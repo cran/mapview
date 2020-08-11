@@ -14,7 +14,7 @@
 #' \cr
 #' \emph{Maintainer:} Tim Appelhans \email{tim.appelhans@gmail.com}
 #'
-#' @import leaflet sp sf raster satellite scales methods png lattice viridisLite base64enc
+#' @import leaflet sp sf raster satellite scales methods png lattice base64enc
 #' @importFrom grDevices rgb dev.off png svg colorRampPalette grey.colors
 #' @importFrom utils find glob2rx
 #' @importFrom webshot webshot
@@ -33,7 +33,7 @@ NULL
 #' University of Marburg for a seminar called
 #' "The Geography of Beer: sustainability in the food industry"
 #' and partly consists of breweries downloaded from
-#' \url{http://www.bierwandern.de/inhalt/brauereiliste.html} with the kind permission
+#' \url{https://www.bierwandern.de/inhalt/brauereiliste.html} with the kind permission
 #' of Rainer Kastl. Note that use of these data is restricted to  non-commercial use
 #' and that they are explixitly excluded from the GPL lincense that mapview is licensed under.
 #' @format \code{sf feature collection POINT}
@@ -44,11 +44,11 @@ NULL
 #' @title Administrative district borders of Franconia
 #' @description Administrative district borders of Franconia
 #' @details The NUTS_2013_01M_SH.zip archive was downloaded on 23/03/2017 from
-#' \url{http://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts}.
+#' \url{https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts}.
 #' \url{https://gist.github.com/tim-salabim/2845fa90813fa25c18cf83f9b88cbde0}
 #' @format \code{sf feature collection MULTIPOLYGON}
 #' @source
-#' \url{http://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts}
+#' \url{https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts}
 NULL
 #'
 #' @docType data
@@ -62,6 +62,6 @@ NULL
 #' @format \code{sf feature collection MULTILINESTRING}
 #' @source
 #' Datenquelle: Bayerische Vermessungsverwaltung - www.geodaten.bayern.de
-#' \url{http://www.ldbv.bayern.de/produkte/weitere/opendata.html}
+#' \url{https://www.ldbv.bayern.de/produkte/weitere/opendata.html}
 NULL
 

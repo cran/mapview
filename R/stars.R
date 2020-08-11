@@ -1,69 +1,56 @@
-#' Add stars layer to a leaflet map
-#'
-#' @param map a mapview or leaflet object.
-#' @param x a stars layer.
-#' @param band the band number to be plotted.
-#' @param colors the color palette (see colorNumeric) or function to use to
-#' color the raster values (hint: if providing a function, set na.color
-#' to "#00000000" to make NA areas transparent)
-#' @param opacity the base opacity of the raster, expressed from 0 to 1
-#' @param attribution the HTML string to show as the attribution for this layer
-#' @param layerId the layer id
-#' @param group the name of the group this raster image should belong to
-#' (see the same parameter under addTiles)
-#' @param project if TRUE, automatically project x to the map projection
-#' expected by Leaflet (EPSG:3857); if FALSE, it's the caller's responsibility
-#' to ensure that x is already projected, and that extent(x) is
-#' expressed in WGS84 latitude/longitude coordinates
-#' @param method the method used for computing values of the new,
-#' projected raster image. "bilinear" (the default) is appropriate for
-#' continuous data, "ngb" - nearest neighbor - is appropriate for categorical data.
-#' Ignored if project = FALSE. See projectRaster for details.
-#' @param maxBytes the maximum number of bytes to allow for the projected image
-#' (before base64 encoding); defaults to 4MB.
-#'
-#' @details
-#' This is an adaption of \code{\link{addRasterImage}}. See that documentation
-#' for details.
-#'
-#' @examples
-#' \dontrun{
-#' library(stars)
-#' library(leaflet)
-#' tif = system.file("tif/L7_ETMs.tif", package = "stars")
-#' x = read_stars(tif)
-#' leaflet() %>%
-#'   addProviderTiles("OpenStreetMap") %>%
-#'   addStarsImage(x, project = TRUE)
-#' }
-#'
-#' @export addStarsImage
-addStarsImage <- function(map,
-                          x,
-                          band = 1,
-                          colors = "Spectral",
-                          opacity = 1,
-                          attribution = NULL,
-                          layerId = NULL,
-                          group = NULL,
-                          project = FALSE,
-                          method = c("bilinear", "ngb"),
-                          maxBytes = 4 * 1024 * 1024) {
-  .Deprecated(new = "leafem::addStarsImage", package = "mapview",
-              old = "mapview::addStarsImage")
-
-  leafem::addStarsImage(map = map,
-                        x = x,
-                        band = band,
-                        colors = colors,
-                        opacity = opacity,
-                        attribution = attribution,
-                        layerId = layerId,
-                        group = group,
-                        project = project,
-                        method = method,
-                        maxBytes = maxBytes)
-}
+# #' Add stars layer to a leaflet map
+# #'
+# #' @param map a mapview or leaflet object.
+# #' @param x a stars layer.
+# #' @param band the band number to be plotted.
+# #' @param colors the color palette (see colorNumeric) or function to use to
+# #' color the raster values (hint: if providing a function, set na.color
+# #' to "#00000000" to make NA areas transparent)
+# #' @param opacity the base opacity of the raster, expressed from 0 to 1
+# #' @param attribution the HTML string to show as the attribution for this layer
+# #' @param layerId the layer id
+# #' @param group the name of the group this raster image should belong to
+# #' (see the same parameter under addTiles)
+# #' @param project if TRUE, automatically project x to the map projection
+# #' expected by Leaflet (EPSG:3857); if FALSE, it's the caller's responsibility
+# #' to ensure that x is already projected, and that extent(x) is
+# #' expressed in WGS84 latitude/longitude coordinates
+# #' @param method the method used for computing values of the new,
+# #' projected raster image. "bilinear" (the default) is appropriate for
+# #' continuous data, "ngb" - nearest neighbor - is appropriate for categorical data.
+# #' Ignored if project = FALSE. See projectRaster for details.
+# #' @param maxBytes the maximum number of bytes to allow for the projected image
+# #' (before base64 encoding); defaults to 4MB.
+# #'
+# #' @details
+# #' This is an adaption of \code{\link{addRasterImage}}. See that documentation
+# #' for details.
+# #'
+# #' @examples
+# #' \dontrun{
+# #' library(stars)
+# #' library(leaflet)
+# #' tif = system.file("tif/L7_ETMs.tif", package = "stars")
+# #' x = read_stars(tif)
+# #' leaflet() %>%
+# #'   addProviderTiles("OpenStreetMap") %>%
+# #'   addStarsImage(x, project = TRUE)
+# #' }
+# #'
+# #' @export addStarsImage
+# addStarsImage <- function(map,
+#                           x,
+#                           band = 1,
+#                           colors = "Spectral",
+#                           opacity = 1,
+#                           attribution = NULL,
+#                           layerId = NULL,
+#                           group = NULL,
+#                           project = FALSE,
+#                           method = c("bilinear", "ngb"),
+#                           maxBytes = 4 * 1024 * 1024) {
+#   .Defunct(new = "leafem::addStarsImage", package = "mapview")
+# }
 
 leaflet_stars = function(x,
                          band,
@@ -89,6 +76,7 @@ leaflet_stars = function(x,
                          query.position,
                          query.prefix,
                          viewer.suppress,
+                         pane,
                          ...) {
   if (inherits(map, "mapview")) map = mapview2leaflet(map)
   if (is.null(layer.name)) layer.name = makeLayerName(x, zcol = band)
@@ -129,6 +117,17 @@ leaflet_stars = function(x,
     # } else {
     #   values = round(values, 5)
     # }
+    # if(length(dim(x)) == 2) layer = x[[1]] else layer = x[[1]][, , band]
+    # EJP: handle factors first
+    if (is.null(at)) {
+      atv = if (is.factor(x[[1]]))
+        as.vector(layer)
+      else
+        lattice::do.breaks(extendLimits(range(layer, na.rm = TRUE)), 256)
+    } else {
+      atv = at
+    }
+
     if (is.fact) {
       ### delete at some stage!!! ###
       pal = leaflet::colorFactor(palette = col.regions,
@@ -137,18 +136,18 @@ leaflet_stars = function(x,
       # pal2 = pal
     } else {
       pal = rasterColors(col.regions,
-                         at = at,
+                         at = atv,
                          na.color = na.color)
-      if (length(at) > 11) {
-        pal2 = leaflet::colorNumeric(palette = col.regions,
-                                     domain = at,
-                                     na.color = na.color)
-      } else {
-        pal2 = leaflet::colorBin(palette = col.regions,
-                                 bins = length(at),
-                                 domain = at,
-                                 na.color = na.color)
-      }
+      # if (length(at) > 11) {
+      #   pal2 = leaflet::colorNumeric(palette = col.regions,
+      #                                domain = at,
+      #                                na.color = na.color)
+      # } else {
+      #   pal2 = leaflet::colorBin(palette = col.regions,
+      #                            bins = length(at),
+      #                            domain = at,
+      #                            na.color = na.color)
+      # }
     }
 
     if (use.layer.names) {
@@ -159,15 +158,47 @@ leaflet_stars = function(x,
     }
     # x <- sf::st_transform(x, crs = 3857)
     ## add layers to base map
-    m = leafem::addStarsImage(map = m,
-                              x = x,
-                              band = band,
-                              colors = pal,
-                              project = TRUE,
-                              opacity = alpha.regions,
-                              group = grp,
-                              layerId = grp,
-                              ...)
+    if (utils::packageVersion("leafem") < "0.1.3") {
+      m = leafem::addStarsImage(map = m,
+                                x = x,
+                                band = band,
+                                colors = pal,
+                                project = TRUE,
+                                opacity = alpha.regions,
+                                group = grp,
+                                layerId = grp,
+                                ...)
+    } else {
+      label = FALSE
+
+      if (!is.null(pane)) {
+        if (pane == "auto") {
+          pane = paneName(x)
+          zindex = zIndex(x)
+          m = leaflet::addMapPane(m, pane, zindex)
+        }
+      }
+
+      dm_lngth = length(dim(x))
+      if (dm_lngth > 2) x = x[, , , band] else x = x
+
+      m = leafem::addGeoRaster(
+        map = m
+        , x = x
+        , group = grp
+        , layrId = grp
+        , opacity = alpha.regions
+        , colorOptions = leafem::colorOptions(
+          palette = col.regions
+          , breaks = at
+          , na.color = na.color
+        )
+        , options = leaflet::tileOptions(
+          pane = pane
+        )
+      )
+    }
+
     m = removeLayersControl(m)
     m = mapViewLayersControl(map = m,
                              map.types = map.types,
@@ -204,6 +235,7 @@ leaflet_stars = function(x,
 
     m = leaflet::addScaleBar(map = m, position = "bottomleft")
     m = leafem::addMouseCoordinates(m)
+    m = leafem::addCopyExtent(m)
     if (homebutton) m = leafem::addHomeButton(m, ext, group = layer.name)
     out = new('mapview', object = list(x), map = m)
     return(out)

@@ -75,7 +75,7 @@ mapviewWatcher = function(env = .GlobalEnv, ...) {
     spatdat_lst = getSpatialData(env = env)
     if (length(spatdat_lst) > 0 && !identical(spatdat_lst, last_value)) {
       m = mapview::mapView(spatdat_lst)
-      mapview::mapshot(m, htmlFile)
+      mapview::mapshot(m, htmlFile, selfcontained = FALSE)
 
       viewer <- getOption("viewer")
       if (!is.null(viewer)) {
@@ -127,13 +127,13 @@ getSpatialData = function(env = .GlobalEnv) {
   st_dat = as.list(dat[st_idx])
   names(st_dat) = dat[st_idx]
 
-  ## raster
-  rs_idx = grep("Raster", cls)
-  rs_dat = as.list(dat[rs_idx])
-  names(rs_dat) = dat[rs_idx]
+  ## raster - doesn't work currently! fix by converting to stars internally
+  # rs_idx = grep("Raster", cls)
+  # rs_dat = as.list(dat[rs_idx])
+  # names(rs_dat) = dat[rs_idx]
 
   ## combine and get
-  spatdat = Filter(Negate(is.null), c(sf_dat, sp_dat, st_dat, rs_dat))
+  spatdat = Filter(Negate(is.null), c(sf_dat, sp_dat, st_dat)) #, rs_dat))
 
   lapply(spatdat, get)
 }
