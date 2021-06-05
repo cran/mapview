@@ -1,10 +1,10 @@
 
 # mapview
 
+<!-- badges: start -->
+[![tic](https://github.com/r-spatial/mapview/workflows/tic/badge.svg?branch=master)](https://github.com/r-spatial/mapview/actions)
 [![cran
 checks](https://cranchecks.info/badges/worst/mapview)](https://cran.r-project.org/web/checks/check_results_mapview.html)
-[![Travis-CI Build
-Status](https://travis-ci.org/r-spatial/mapview.svg?branch=develop)](https://travis-ci.org/r-spatial/mapview)
 [![monthly](https://cranlogs.r-pkg.org/badges/mapview)](https://www.rpackages.io/package/mapview)
 [![total](https://cranlogs.r-pkg.org/badges/grand-total/mapview)](https://www.rpackages.io/package/mapview)
 [![CRAN](https://www.r-pkg.org/badges/version/mapview?color=009999)](https://cran.r-project.org/package=mapview)
@@ -12,16 +12,26 @@ Status](https://travis-ci.org/r-spatial/mapview.svg?branch=develop)](https://tra
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/r-spatial/mapview/develop.svg)](https://codecov.io/github/r-spatial/mapview?branch=develop)
 [![status](https://tinyverse.netlify.com/badge/mapview)](https://CRAN.R-project.org/package=mapview)
+<!-- badges: end -->
 
 ### Interactive viewing of spatial data in R
 
 <a href="https://github.com/tim-salabim/mvl"><img align="right" src="https://github.com/tim-salabim/mvl/blob/cstriestohelp/imagery/animated/box_anim.gif?raw=true" /></a>
 
 **mapview** provides functions to very quickly and conveniently create
-interactive visualisations of spatial data. It was created to fill the
-gap of quick (not presentation grade) interactive plotting to examine
-and visually investigate both aspects of spatial data, the geometries
-and their attributes.
+interactive visualisations of spatial data. It’s main goal is to fill
+the gap of quick (not presentation grade) interactive plotting to
+examine and visually investigate both aspects of spatial data, the
+geometries and their attributes. It can also be considered a data-driven
+API for the [**leaflet**](https://cran.r-project.org/package=leaflet)
+package as it will automatically render correct map types, depending on
+the type of the data (points, lines, polygons, raster). In addition, it
+makes use of some advanced rendering functionality that will enable
+viewing of much larger data than is possible with **leaflet**.
+Furthermore, if you’re a fan of
+[**mapdeck**](https://cran.r-project.org/package=mapdeck) (which you
+should\!), you can choose to use it as the rendering platform instead of
+**leaflet** by setting `mapviewOptions(platform = "mapdeck")`.
 
 The main user relevant functions are:
 
@@ -78,11 +88,14 @@ For CRAN release version of **mapview** use
 install.packages("mapview")
 ```
 
-To install the development version install the
-[devtools](https://cran.r-project.org/package=devtools) package.
+To install the development version you can install the
+[remotes](https://cran.r-project.org/package=remotes) package.
+
+**NOTE:** As of version 2.9.1 development will happen on the `master`
+branch. Please consider the `develop` branch obsolete.
 
 ``` r
-devtools::install_github("r-spatial/mapview@develop")
+remotes::install_github("r-spatial/mapview")
 ```
 
 ## Usage
@@ -102,6 +115,3 @@ following components:
 
 Please file bug reports and feature requests at
 <https://github.com/r-spatial/mapview/issues>
-
-In case of Pull Requests, please make sure to submit them to the
-`develop` branch of this repository.

@@ -100,6 +100,8 @@ leafletRL = function(x,
 
     }
 
+    maxbytes = mapviewGetOption("raster.size")
+
     m = leafem::garnishMap(
       map = m
       , leaflet::addRasterImage
@@ -109,6 +111,7 @@ leafletRL = function(x,
       , opacity = alpha.regions
       , group = grp
       , layerId = grp
+      , maxBytes = maxbytes
       , ...
     )
 
@@ -263,7 +266,7 @@ leafletRSB = function(x,
 
     if (length(getLayerNamesFromMap(m@map)) > 1) {
       m = leaflet::hideGroup(map = m@map,
-                             group = layers2bHidden(m@map))
+                             group = layers2bHidden(m@map, ...))
     }
     out = new('mapview', object = list(x), map = m)
   }

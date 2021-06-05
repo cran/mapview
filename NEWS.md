@@ -1,3 +1,28 @@
+## mapview 2.10.0
+
+new features:
+
+  * new implementation of print method to make mapview with flatgeobuf work outside RStudio.
+  * auto setting of mapviewOptions(fgb = TRUE) at load only if not in knitr, notebook. https://twitter.com/TimSalabim3/status/1337714868925980674
+  * new option `basemaps.color.shuffle` to control if basemaps should automatically adjust to colors of overlays (i.e. use black basemap as default for very light colors). #377
+
+miscellaneous:
+
+  * use tinytest for testing
+  * `mapviewGetOption()` is now vectorised.
+
+bugfixes:
+
+  * rmd files did not compile due to missing popup.css #312
+  * method for RasterStackBrick now respects query.digits option. #334
+  * don't emit warning when length(at) == length(color). #327 
+  * alpha.regions now respected if burst = TRUE. #352
+  * printing in rmarkdown notebooks works now if fgb & georaster options are FALSE. #351
+  * setting options("OutDec" = ",") does not cause an error anymore. #353
+  * factor legends now displayed correctly (hopefully). #362 #356
+  * re-enabled hidden argument `hide` to hide all but the first layer of a RasterStackBrick. #374
+  * custom layer names now respected when rendering lists (if same length). #383
+
 ## mapview 2.9.0
 
 new features:

@@ -15,19 +15,38 @@ factorLegend <- function(map,
                          na.color,
                          layer.name,
                          ...) {
-  pal <- factorPalette(palette = zcolColors(x = values,
-                                            colors = colors,
-                                            na.color = na.color,
-                                            return.sorted = TRUE),
-                       domain = values,
-                       na.color = na.color)
+
+  pltt = unique(
+    zcolColors(
+      x = values[!is.na(values)]
+      , colors = colors
+      , na.color = na.color
+      , return.sorted = ifelse(is.function(colors), TRUE, FALSE)
+    )
+  )
+
+  if (length(levels(values)) == length(colors)) {
+    pltt = zcolColors(
+      x = values
+      , colors = colors
+      , na.color = na.color
+      , return.sorted = ifelse(is.function(colors), TRUE, FALSE)
+    )
+  }
+
+  pal <- factorPalette(
+    palette = pltt
+    , domain = values
+    , na.color = na.color
+  )
+
   mvAddLegend(isAvailableInLeaflet()$leggrp,
               layer.name,
               map = map,
               position = position,
               pal = pal,
               values = values,
-              opacity = 1,
+              opacity = mapviewGetOption("legend.opacity"),
               title = ifelse(length(values) > 1, layer.name, ""),
               ...)
 
@@ -45,19 +64,23 @@ characterLegend <- function(map,
   } else {
     vals = values
   }
-  pal <- factorPalette(palette = zcolColors(x = vals,
-                                            colors = colors,
-                                            na.color = na.color,
-                                            return.sorted = TRUE),
-                       domain = values,
-                       na.color = na.color)
+  pal <- factorPalette(
+    palette = zcolColors(
+      x = vals
+      , colors = colors
+      , na.color = na.color
+      , return.sorted = ifelse(is.function(colors), TRUE, FALSE)
+    )
+    , domain = values
+    , na.color = na.color
+  )
   mvAddLegend(isAvailableInLeaflet()$leggrp,
               layer.name,
               map = map,
               position = position,
               pal = pal,
               values = values,
-              opacity = 1,
+              opacity = mapviewGetOption("legend.opacity"),
               title = ifelse(length(values) > 1, layer.name, ""))
 }
 
@@ -93,8 +116,12 @@ numericLegend <- function(map,
                           ...) {
   n_unique <- ifelse(is.null(at), length(unique(values)), length(at))
   if (is.null(at)) {
-    atc <- lattice::do.breaks(range(values, na.rm = TRUE),
-                              length(unique(values)))
+    atc <- lattice::do.breaks(
+      extendLimits(
+        range(values, na.rm = TRUE)
+      )
+      , length(unique(values))
+    )
   } else atc <- at
 
   if (is.null(at) & n_unique <= 11 & all(unique(values) %% 1 == 0, na.rm = TRUE)) {
@@ -117,7 +144,7 @@ numericLegend <- function(map,
                 position = position,
                 pal = pal,
                 values = values,
-                opacity = 1,
+                opacity = mapviewGetOption("legend.opacity"),
                 title = ifelse(length(values) > 1, layer.name, ""),
                 ...)
   } else if (is.null(at)) {
@@ -131,7 +158,7 @@ numericLegend <- function(map,
                 position = position,
                 pal = pal,
                 values = values,
-                opacity = 1,
+                opacity = mapviewGetOption("legend.opacity"),
                 title = ifelse(length(values) > 1, layer.name, ""),
                 ...)
   }
@@ -165,6 +192,7 @@ mapviewLegend <- function(values,
                           position = mapviewGetOption("legend.pos"),
                           ...) {
 
+  # values = as.vector(values)
   ## factor
   ## if character convert to factor
   if (inherits(values, "character")) {
@@ -173,7 +201,7 @@ mapviewLegend <- function(values,
 
   ## numeric
   ## if interger convert to numeric
-  if (inherits (values, "integer")) {
+  if (inherits(values, "integer")) {
     values = as.numeric(values)
   }
 
@@ -181,7 +209,9 @@ mapviewLegend <- function(values,
 
     if (inherits(values, "factor")) {
       if (length(values) == length(colors)) {
-        values = factor(unique(droplevels(values)), levels = unique(droplevels(values)))
+        values = droplevels(values)
+        values = unique(values)
+        # values = factor(unique(droplevels(values)), levels = unique(droplevels(values)))
         colors = unique(colors)[as.numeric(values)]
       } else if (length(levels(values)) >= length(unique(colors))) {
         values = unique(values)
@@ -212,7 +242,7 @@ mapviewLegend <- function(values,
         colors = grDevices::colorRampPalette(colors)
       }
       if (length(colors) == length(values)) {
-        colors = colors[order(values)]
+        colors = colors #colors[order(values)]
         values = as.factor(values)
       }
     }
@@ -228,7 +258,7 @@ mapviewLegend <- function(values,
     switch(value.class,
            factor = factorLegend(map,
                                  position = position,
-                                 values = levels(values),
+                                 values = values, #levels(values),
                                  colors = colors,
                                  na.color = na.color,
                                  layer.name = layer.name,
@@ -323,7 +353,7 @@ addVectorLegend <- function(x,
                           position = mapviewGetOption("legend.pos"),
                           values = leg_vals,
                           pal = pal2,
-                          opacity = 1,
+                          opacity = mapviewGetOption("legend.opacity"),
                           labFormat = labelFormat(big.mark = ""),
                           title = zcol)
 
@@ -400,7 +430,7 @@ addRasterLegend <- function(x,
                             values = leg_vals,
                             group = group,
                             pal = pal2,
-                            opacity = 1,
+                            opacity = mapviewGetOption("legend.opacity"),
                             labFormat = labelFormat(big.mark = ""),
                             title = title)
   } else {
@@ -408,7 +438,7 @@ addRasterLegend <- function(x,
                             position = mapviewGetOption("legend.pos"),
                             values = leg_vals,
                             pal = pal2,
-                            opacity = 1,
+                            opacity = mapviewGetOption("legend.opacity"),
                             labFormat = labelFormat(big.mark = ""),
                             title = title)
   }

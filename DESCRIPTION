@@ -1,8 +1,7 @@
 Type: Package
 Package: mapview
 Title: Interactive Viewing of Spatial Data in R
-Version: 2.9.0
-Date: 2020-08-09
+Version: 2.10.0
 Authors@R: 
     c(person(given = "Tim",
              family = "Appelhans",
@@ -64,16 +63,17 @@ BugReports: https://github.com/r-spatial/mapview/issues
 Depends: methods, R (>= 3.6.0)
 Imports: base64enc, htmltools, htmlwidgets, lattice, leafem, leaflet
         (>= 2.0.0), leafpop, png, raster, satellite, scales (>= 0.2.5),
-        sf, sp, webshot
-Suggests: covr, dplyr, knitr, later, leaflet.extras2, lwgeom, mapdeck,
-        plainview, rmarkdown, stars, testthat
+        servr, sf, sp, webshot
+Suggests: covr, knitr, later, leaflet.extras2, leafsync, lwgeom,
+        mapdeck, plainview, poorman, rmarkdown, rstudioapi, s2, stars,
+        tinytest
 ByteCompile: yes
-LazyData: TRUE
 Encoding: UTF-8
+LazyData: TRUE
 RoxygenNote: 7.1.1
 SystemRequirements: GNU make
 NeedsCompilation: no
-Packaged: 2020-08-10 18:29:27 UTC; timpanse
+Packaged: 2021-06-05 14:01:03 UTC; timpanse
 Author: Tim Appelhans [cre, aut],
   Florian Detsch [aut],
   Christoph Reudenbach [aut],
@@ -89,4 +89,4 @@ Author: Tim Appelhans [cre, aut],
   Environmental Informatics Marburg [ctb],
   Lorenzo Busetto [ctb]
 Repository: CRAN
-Date/Publication: 2020-08-11 14:30:13 UTC
+Date/Publication: 2021-06-05 15:10:02 UTC

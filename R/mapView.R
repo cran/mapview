@@ -38,11 +38,8 @@ if ( !isGeneric('mapView') ) {
 #'   performance with larger data. See \url{https://leafletjs.com/reference-1.6.0.html#canvas}
 #'   for more information. Only applicable for vector data. The default setting will
 #'   decide automatically, based on feature complexity.
-#' @param viewer.suppress whether to render the map in the browser (\code{TRUE})
-#'   or the RStudio viewer (\code{FALSE}). When not using RStudio, maps will open
-#'   in the browser by default. This is passed to \link[htmlwidgets]{sizingPolicy}
-#'   via \link[leaflet]{leafletSizingPolicy}. For raster data the default is \code{FALSE}.
-#'   For vector data it depends on argument \code{canvas}.
+#' @param viewer.suppress deprecated.
+#'   Use \code{mapviewOptions(viewer.suppress = TRUE/FALSE)} instead.
 #' @param maxpixels integer > 0. Maximum number of cells to use for the plot.
 #'   If maxpixels < \code{ncell(x)}, sampleRegular is used before plotting.
 #' @param color color (palette) for points/polygons/lines
@@ -116,7 +113,9 @@ if ( !isGeneric('mapView') ) {
 #'   as prefix for the layerId. Ignored if \code{label = FALSE}.
 #' @param ... additional arguments passed on to respective functions.
 #'   See \code{\link{addRasterImage}}, \code{\link{addCircles}},
-#' \code{\link{addPolygons}}, \code{\link{addPolylines}} for details
+#'   \code{\link{addPolygons}}, \code{\link{addPolylines}} for details.
+#'   Furthermore, you can pass hidden arguments to some methods. See Details for
+#'   a list of supported hidden arguments.
 #'
 #' @details
 #' \code{maxpoints} is taken to determine when to switch rendering from svg
@@ -132,7 +131,12 @@ if ( !isGeneric('mapView') ) {
 #'   the number of features (points, lines or polygons). When the number of
 #'   features in the current view window is larger than \code{maxFeatures} then
 #'   features are rendered on the canvas, otherwise they are rendered as svg objects
-#'   and fully queriable.
+#'   and fully queriable.\cr
+#'   \cr
+#'   Hidden arguments that can be set via \code{...}:\cr
+#'   \cr
+#'   * \code{hide}: hide all but the first layer when rendering a RasterStackBrick.
+#'
 #'
 #' @author
 #' Tim Appelhans
@@ -200,7 +204,7 @@ if ( !isGeneric('mapView') ) {
 #'
 #'
 #'   ### ceci constitue la fin du pipe ======================================
-#'   library(dplyr)
+#'   library(poorman)
 #'   library(sf)
 #'
 #'   franconia %>%
@@ -464,7 +468,7 @@ setMethod('mapView', signature(x = 'RasterStackBrick'),
                    method = mapviewGetOption("method"),
                    label = TRUE,
                    query.type = c("mousemove", "click"),
-                   query.digits,
+                   query.digits = mapviewGetOption("query.digits"),
                    query.position = mapviewGetOption("query.position"),
                    query.prefix = "Layer",
                    viewer.suppress = mapviewGetOption("viewer.suppress"),
@@ -611,8 +615,15 @@ setMethod('mapView', signature(x = 'sf'),
                    " does not contain data \n", call. = FALSE)
             }
 
-            if (length(unique(sf::st_dimension(x))) > 1) {
+            dims = try(sf::st_dimension(x), silent = TRUE)
+            if (inherits(dims, "try-error")) {
               x = sf::st_cast(x)
+            }
+            if (!inherits(dims, "try-error")) {
+              if (length(unique(dims)) > 1 |
+                  inherits(sf::st_geometry(x), "sfc_GEOMETRY")) {
+                x = sf::st_cast(x)
+              }
             }
 
             if (is.null(zcol) & is.null(legend)) legend = FALSE
@@ -655,18 +666,21 @@ setMethod('mapView', signature(x = 'sf'),
                 if (length(col.regions) > 1)
                   col.regions = col.regions[order(x[[zcol]])]
 
-                popup = leafpop::popupTable(x)[order(x[[zcol]])]
+                popup = leafpop::popupTable(x, className = "mapview-popup")[order(x[[zcol]])]
                 label = makeLabels(x, zcol)[order(x[[zcol]])]
                 by_row = TRUE
               }
 
               # for whatever reason we need to evaluate a few things here...??
               popup = popup
-              lwd = lineWidth(x)
-              alpha.regions = regionOpacity(x)
+              lwd = lwd
+              alpha.regions = alpha.regions
               x <- burst(x = x,
                          zcol = zcol,
                          burst = burst)
+              if (length(layer.name) == length(x)) {
+                names(x) = layer.name
+              }
             }
 
             if (inherits(x, "list")) {
@@ -1044,7 +1058,7 @@ setMethod('mapView', signature(x = 'data.frame'),
                    ycol,
                    grid = TRUE,
                    aspect = 1,
-                   popup = leafpop::popupTable(x),
+                   popup = leafpop::popupTable(x, className = "mapview-popup"),
                    label,
                    crs = NA,
                    ...) {
@@ -1251,7 +1265,7 @@ setMethod('mapView', signature(x = 'list'),
                    na.alpha = lapply(x, regionOpacity),
                    map.types = mapviewGetOption("basemaps"),
                    verbose = mapviewGetOption("verbose"),
-                   popup = ifelse(isTRUE(mapviewGetOption("fgb")), TRUE, lapply(x, leafpop::popupTable)),
+                   popup = TRUE,
                    layer.name = deparse(substitute(x,
                                                    env = parent.frame())),
                    label = lapply(x, makeLabels),
@@ -1265,6 +1279,15 @@ setMethod('mapView', signature(x = 'list'),
             } else {
               listify = listifyer(x)
             }
+
+            if (is.null(popup)) popup = FALSE
+            # if (isTRUE(popup)) {
+            #   popup = ifelse(
+            #     isTRUE(mapviewGetOption("fgb"))
+            #     , TRUE
+            #     , lapply(x, leafpop::popupTable, className = "mapview-popup")
+            #   )
+            # }
 
             lyrnms = makeListLayerNames(x, layer.name)
 
@@ -1282,14 +1305,19 @@ setMethod('mapView', signature(x = 'list'),
                       alpha.regions = listify(alpha.regions)[[i]],
                       map.types = map.types,
                       verbose = verbose,
-                      popup = listify(popup)[[i]],
+                      popup = ifelse(isTRUE(popup), TRUE, listify(popup)[[i]]),
                       layer.name = lyrnms[[i]],
-                      label = listify(label)[[i]],
+                      label = ifelse(length(label[[i]]) == 0, FALSE, listify(label)[[i]]),
                       legend = listify(legend)[[i]],
                       homebutton = listify(homebutton)[[i]],
                       native.crs = native.crs,
                       ...)
             }))@map
+
+            if (length(getLayerNamesFromMap(m)) > 1) {
+              m = leaflet::hideGroup(map = m,
+                                     group = layers2bHidden(m, ...))
+            }
 
             out <- new("mapview", object = x, map = m)
             return(out)

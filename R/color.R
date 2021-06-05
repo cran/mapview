@@ -79,25 +79,36 @@ mapviewColors <- function(x,
 
 
 ## raster colors
-rasterColors <- function(col.regions,
+rasterColors = function(col.regions,
                          at,
                          na.color) {
 
-  f <- function(x) {
+  f = function(x) {
 
-    cols <- lattice::level.colors(x,
-                                  at = at,
-                                  col.regions = col.regions)
-    #cols <- col2Hex(cols)
-    cols[is.na(cols)] <- na.color
+    if (!is.null(attr(x, "color"))) {
+      cols = attributes(x)$colors
+      cols = cols[as.numeric(x)]
+    } else {
+      cols = lattice::level.colors(
+        x
+        , at = at
+        , col.regions = col.regions
+      )
+    }
+
+    cols[is.na(cols)] = na.color
 
     return(col2Hex(cols, alpha = TRUE))
 
   }
 
-  attributes(f) <- list(colorType = "bin",
-                        colorArgs = list(bins = at,
-                                         na.color = na.color))
+  attributes(f) = list(
+    colorType = "bin"
+    , colorArgs = list(
+      bins = at
+      , na.color = na.color
+    )
+  )
 
   return(f)
 
@@ -198,6 +209,9 @@ zcolColors <- function(x, # a vector, not a sp or sf object
     x = as.factor(x)
   }
 
+  unx = unique(x)
+  unx = unx[!is.na(unx)]
+
   if (!(is.function(colors))) {
     # if (length(colors) == length(x)) {
     #   return(col2Hex(colors))
@@ -209,49 +223,61 @@ zcolColors <- function(x, # a vector, not a sp or sf object
     }
 
     if (inherits(x, "numeric")) {
-      if (length(colors) < length(x)) {
+      if (is.null(at) & length(colors) < length(unx)) {
         warning(
           sprintf(
             "Found less unique colors (%s) than unique zcol values (%s)! \nInterpolating color vector to match number of zcol values."
             , length(colors)
-            , length(unique(x))
+            , length(unx)
           )
           , call. = FALSE
         )
         colors = grDevices::colorRampPalette(colors)
       }
 
-      if (length(colors) > length(unique(x))) {
+      if (!is.null(at) & length(colors) < length(at)) {
+        warning(
+          sprintf(
+            "Found less unique colors (%s) than unique zcol values (%s)! \nInterpolating color vector to match number of zcol values."
+            , length(colors)
+            , length(at)
+          )
+          , call. = FALSE
+        )
+        colors = grDevices::colorRampPalette(colors)
+      }
+
+      if (length(colors) > length(unx)) {
         warning(
           sprintf(
             "Found more unique colors (%s) than unique zcol values (%s)! \nTrimming color vector to match number of zcol values."
             , length(colors)
-            , length(unique(x))
+            , length(unx)
           )
           , call. = FALSE
         )
-        colors = grDevices::colorRampPalette(colors[1:length(x)])
+        colors = grDevices::colorRampPalette(colors[1:length(unx)])
       }
     }
 
     if (inherits(x, "factor")) {
-      if (length(colors) < length(x)) {
-        if (length(unique(colors)) < length(unique(x))) {
+      if (length(colors) < length(unx)) {
+        if (length(unique(colors)) < length(unx)) {
           warning(
             sprintf(
               "Found less unique colors (%s) than unique zcol values (%s)! \nRecycling color vector."
               , length(colors)
-              , length(x)
+              , length(unx)
             )
             , call. = FALSE
           )
         }
-        if (length(unique(colors)) > length(unique(x))) {
+        if (length(unique(colors)) > length(unx)) {
           warning(
             sprintf(
               "Found more unique colors (%s) than unique zcol values (%s)! \nTrimming colors to match number of unique zcol values."
               , length(unique(colors))
-              , length(unique(x))
+              , length(unx)
             )
             , call. = FALSE
           )
@@ -277,13 +303,13 @@ zcolColors <- function(x, # a vector, not a sp or sf object
     nint = length(levels(x))
     rng = range(seq_along(levels(x)), na.rm = TRUE)
   } else {
-    nint = length(unique(x))
+    nint = length(unx)
     rng = range(x, na.rm = TRUE)
   }
 
   x <- as.numeric(x)
 
-  if (length(unique(x)) == 1) {
+  if (length(unx) == 1) {
     cols <- colors(1) #"#ffffff" #"#6666ff"
   } else {
     if (is.null(at)) {

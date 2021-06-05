@@ -135,7 +135,7 @@
   method = mapviewGetOption("method"),
   label = TRUE,
   query.type = c("mousemove", "click"),
-  query.digits,
+  query.digits = mapviewGetOption("query.digits"),
   query.position = mapviewGetOption("query.position"),
   query.prefix = "Layer",
   viewer.suppress = mapviewGetOption("viewer.suppress"),
@@ -250,7 +250,7 @@
   ycol,
   grid = TRUE,
   aspect = 1,
-  popup = leafpop::popupTable(x),
+  popup = leafpop::popupTable(x, className = "mapview-popup"),
   label,
   crs = NA,
   ...
@@ -317,7 +317,7 @@
   na.alpha = lapply(x, regionOpacity),
   map.types = mapviewGetOption("basemaps"),
   verbose = mapviewGetOption("verbose"),
-  popup = ifelse(isTRUE(mapviewGetOption("fgb")), TRUE, lapply(x, leafpop::popupTable)),
+  popup = TRUE,
   layer.name = deparse(substitute(x, env = parent.frame())),
   label = lapply(x, makeLabels),
   legend = mapviewGetOption("legend"),
@@ -473,15 +473,14 @@ for possible values. Ignored if \code{label = FALSE}.}
 \item{query.prefix}{for raster methods only. a character string to be shown
 as prefix for the layerId. Ignored if \code{label = FALSE}.}
 
-\item{viewer.suppress}{whether to render the map in the browser (\code{TRUE})
-or the RStudio viewer (\code{FALSE}). When not using RStudio, maps will open
-in the browser by default. This is passed to \link[htmlwidgets]{sizingPolicy}
-via \link[leaflet]{leafletSizingPolicy}. For raster data the default is \code{FALSE}.
-For vector data it depends on argument \code{canvas}.}
+\item{viewer.suppress}{deprecated.
+Use \code{mapviewOptions(viewer.suppress = TRUE/FALSE)} instead.}
 
 \item{...}{additional arguments passed on to respective functions.
-  See \code{\link{addRasterImage}}, \code{\link{addCircles}},
-\code{\link{addPolygons}}, \code{\link{addPolylines}} for details}
+See \code{\link{addRasterImage}}, \code{\link{addCircles}},
+\code{\link{addPolygons}}, \code{\link{addPolylines}} for details.
+Furthermore, you can pass hidden arguments to some methods. See Details for
+a list of supported hidden arguments.}
 
 \item{band}{for stars layers, the band number to be plotted.}
 
@@ -582,7 +581,11 @@ the popup will potentially still say something like "POLYGON Z".
   the number of features (points, lines or polygons). When the number of
   features in the current view window is larger than \code{maxFeatures} then
   features are rendered on the canvas, otherwise they are rendered as svg objects
-  and fully queriable.
+  and fully queriable.\cr
+  \cr
+  Hidden arguments that can be set via \code{...}:\cr
+  \cr
+  * \code{hide}: hide all but the first layer when rendering a RasterStackBrick.
 }
 \section{Methods (by class)}{
 \itemize{
@@ -702,7 +705,7 @@ the popup will potentially still say something like "POLYGON Z".
 
 
   ### ceci constitue la fin du pipe ======================================
-  library(dplyr)
+  library(poorman)
   library(sf)
 
   franconia \%>\%

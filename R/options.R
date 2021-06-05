@@ -14,6 +14,9 @@
 #' @param basemaps character. The basemaps to be used for rendering data. See
 #' \url{https://leaflet-extras.github.io/leaflet-providers/preview/} for possible
 #' values
+#' @param basemaps.color.shuffle logical. Should basemaps order be changed to
+#' enhance contrast based on layer coloring. Set to FALSE if you supply custom
+#' basemaps or want to ensure that "CartoDB.Positron" is always the default.
 #' @param raster.palette a color palette function for raster visualisation.
 #' Should be a function that takes an integer as input and returns a vector of colors.
 #' See \code{\link{colorRampPalette}} for details.
@@ -102,6 +105,10 @@
 #' A note of warning, data will be attached to the html
 #' via a <src=...> call which means that the html is not selfcontained anymore
 #' (so it cannot be used without an accompanying folder).
+#' @param georaster whether to use \code{\link[leafem]{addGeoRaster}} instead of
+#' \code{\link[leaflet]{addRasterImage}}. If set to \code{TRUE} raster image visualisation
+#'  will be more performant for large raster data, but given the nearest neighbor
+#'  resampling results may be slightly distorted.
 #'
 #' @author
 #' Tim Appelhans
@@ -128,47 +135,49 @@
 #' @name mapviewOptions
 #' @rdname mapviewOptions
 #' @aliases mapviewOptions
-mapviewOptions <- function(platform,
-                           basemaps,
-                           raster.palette,
-                           vector.palette,
-                           verbose,
-                           na.color,
-                           legend,
-                           legend.opacity,
-                           legend.pos,
-                           layers.control.pos,
-                           leafletWidth,
-                           leafletHeight,
-                           viewer.suppress,
-                           homebutton,
-                           homebutton.pos,
-                           native.crs,
-                           raster.size,
-                           mapview.maxpixels,
-                           plainview.maxpixels,
-                           use.layer.names,
-                           trim,
-                           method,
-                           query.type,
-                           query.digits,
-                           query.position,
-                           query.prefix,
-                           maxpoints,
-                           maxpolygons,
-                           maxlines,
-                           pane,
-                           cex,
-                           alpha,
-                           default = FALSE,
-                           console = TRUE,
-                           watch = FALSE,
-                           fgb) {
+mapviewOptions = function(platform,
+                          basemaps,
+                          basemaps.color.shuffle,
+                          raster.palette,
+                          vector.palette,
+                          verbose,
+                          na.color,
+                          legend,
+                          legend.opacity,
+                          legend.pos,
+                          layers.control.pos,
+                          leafletWidth,
+                          leafletHeight,
+                          viewer.suppress,
+                          homebutton,
+                          homebutton.pos,
+                          native.crs,
+                          raster.size,
+                          mapview.maxpixels,
+                          plainview.maxpixels,
+                          use.layer.names,
+                          trim,
+                          method,
+                          query.type,
+                          query.digits,
+                          query.position,
+                          query.prefix,
+                          maxpoints,
+                          maxpolygons,
+                          maxlines,
+                          pane,
+                          cex,
+                          alpha,
+                          default = FALSE,
+                          console = TRUE,
+                          watch = FALSE,
+                          fgb,
+                          georaster) {
 
   ### 1. global options =====
 
   ## platform ----
-  setPlatform <- function(platform) {
+  setPlatform = function(platform) {
     if (!platform %in% c("leaflet", "leafgl", "mapdeck")) {
       warning(
         sprintf(
@@ -187,7 +196,7 @@ mapviewOptions <- function(platform,
       warning(
         sprintf(
           "option 'fgb' cannot (yet) be used with platform '%s'. Ignoring 'fgb'."
-         , platform
+          , platform
         )
         , call. = FALSE
       )
@@ -195,9 +204,9 @@ mapviewOptions <- function(platform,
     options(mapviewPlatform = platform)
   }
 
-  .platform <- function() {
-    default <- "leaflet"
-    pf <- getOption('mapviewPlatform')
+  .platform = function() {
+    default = "leaflet"
+    pf = getOption('mapviewPlatform')
     if (is.null(pf)) {
       return(default)
     } else {
@@ -206,14 +215,14 @@ mapviewOptions <- function(platform,
   }
 
   ## basemaps ----
-  setBasemaps <- function(basemaps) {
+  setBasemaps = function(basemaps) {
     options(mapviewBasemaps = basemaps)
   }
 
-  .basemaps <- function() {
-    pf <- getOption('mapviewPlatform')
+  .basemaps = function() {
+    pf = getOption('mapviewPlatform')
     if (is.null(pf) || pf %in% c("leaflet", "leafgl")) {
-      default <- c(
+      default = c(
         "CartoDB.Positron"
         , "CartoDB.DarkMatter"
         , "OpenStreetMap"
@@ -227,7 +236,7 @@ mapviewOptions <- function(platform,
       )
     }
 
-    bm <- getOption('mapviewBasemaps')
+    bm = getOption('mapviewBasemaps')
     if (is.null(bm)) {
       return(default)
     } else {
@@ -235,14 +244,29 @@ mapviewOptions <- function(platform,
     }
   }
 
+  ## basemaps color shuffling
+  setBasemapsShuffle = function(shuffle) {
+    options(mapviewBasemapsColorShuffle = shuffle)
+  }
+
+  .basemapsShuffle = function() {
+    default = TRUE
+    shffl = getOption('mapviewBasemapsColorShuffle')
+    if (is.null(shffl)) {
+      return(default)
+    } else {
+      return(shffl)
+    }
+  }
+
   ## verbose ----
-  setVerbose <- function(verbose) {
+  setVerbose = function(verbose) {
     options(mapviewVerbose = verbose)
   }
 
-  .verbose <- function() {
-    default <- FALSE
-    vb <- getOption('mapviewVerbose')
+  .verbose = function() {
+    default = FALSE
+    vb = getOption('mapviewVerbose')
     if (is.null(vb)) {
       return(default)
     } else {
@@ -251,13 +275,13 @@ mapviewOptions <- function(platform,
   }
 
   ## na.color ----
-  setNAColor <- function(na.color) {
+  setNAColor = function(na.color) {
     options(mapviewNAColor = na.color)
   }
 
-  .naColor <- function() {
-    default <- "#BEBEBE80"
-    nc <- getOption('mapviewNAColor')
+  .naColor = function() {
+    default = "#BEBEBE80"
+    nc = getOption('mapviewNAColor')
     if (is.null(nc)) {
       return(default)
     } else {
@@ -266,13 +290,13 @@ mapviewOptions <- function(platform,
   }
 
   ## legend ----
-  setLegend <- function(legend) {
+  setLegend = function(legend) {
     options(mapviewLegend = legend)
   }
 
-  .Legend <- function() {
-    default <- TRUE
-    sl <- getOption('mapviewLegend')
+  .Legend = function() {
+    default = TRUE
+    sl = getOption('mapviewLegend')
     if (is.null(sl)) {
       return(default)
     } else {
@@ -281,7 +305,7 @@ mapviewOptions <- function(platform,
   }
 
   ## legend.opacity ----
-  etLegendOpacity = function(legend.opacity) {
+  setLegendOpacity = function(legend.opacity) {
     options(mapviewLegendOpacity = legend.opacity)
   }
 
@@ -296,13 +320,13 @@ mapviewOptions <- function(platform,
   }
 
   ## legend.pos ----
-  setLegendPos <- function(legend.pos) {
+  setLegendPos = function(legend.pos) {
     options(mapviewLegendPos = legend.pos)
   }
 
-  .legendPos <- function() {
-    default <- "topright"
-    lp <- getOption('mapviewLegendPos')
+  .legendPos = function() {
+    default = "topright"
+    lp = getOption('mapviewLegendPos')
     if (is.null(lp)) {
       return(default)
     } else {
@@ -311,13 +335,13 @@ mapviewOptions <- function(platform,
   }
 
   ## layers control position ----
-  setLayersControlPos <- function(layers.control.pos) {
+  setLayersControlPos = function(layers.control.pos) {
     options(mapviewLayersControlPos = layers.control.pos)
   }
 
-  .layersControlPos <- function() {
-    default <- "topleft"
-    lcp <- getOption('mapviewLayersControlPos')
+  .layersControlPos = function() {
+    default = "topleft"
+    lcp = getOption('mapviewLayersControlPos')
     if (is.null(lcp)) {
       return(default)
     } else {
@@ -326,13 +350,13 @@ mapviewOptions <- function(platform,
   }
 
   ## leaflet() height ----
-  setleafletHeight <- function(leafletHeight) {
+  setleafletHeight = function(leafletHeight) {
     options(leafletHeight = leafletHeight)
   }
 
-  .leafletHeight <- function() {
-    default <- NULL #"800px"
-    lhgt <- getOption('leafletHeight')
+  .leafletHeight = function() {
+    default = NULL #"800px"
+    lhgt = getOption('leafletHeight')
     if (is.null(lhgt)) {
       return(default)
     } else {
@@ -341,13 +365,13 @@ mapviewOptions <- function(platform,
   }
 
   ## leaflet() width ----
-  setleafletWidth <- function(leafletWidth) {
+  setleafletWidth = function(leafletWidth) {
     options(leafletWidth = leafletWidth)
   }
 
-  .leafletWidth <- function() {
-    default <- NULL #"100%"
-    lwth <- getOption('leafletWidth')
+  .leafletWidth = function() {
+    default = NULL #"100%"
+    lwth = getOption('leafletWidth')
     if (is.null(lwth)) {
       return(default)
     } else {
@@ -430,53 +454,17 @@ mapviewOptions <- function(platform,
     }
   }
 
-  ## fgb ----
-  setFgb <- function(fgb) {
-    if (mapviewGetOption("platform") %in% c("leafgl", "mapdeck") &&
-        isTRUE(fgb)) {
-      warning(
-        sprintf(
-          "option 'fgb' currently only works on platform %s. Setting fgb = FALSE"
-          , "'leaflet'"
-        )
-        , call. = FALSE
-      )
-      fgb = FALSE
-    }
-    v = sf::sf_extSoftVersion()
-    if (unname(v[names(v) == "GDAL"] <= "3.0.4")) {
-      warning(
-        sprintf(
-          "option 'fgb' requires GDAL >= 3.1.0! Your version is %s. Setting fgb = FALSE"
-          , v[names(v) == "GDAL"]
-        )
-        , call. = FALSE
-      )
-      fgb = FALSE
-    }
-    options(mapviewFgb = fgb)
-  }
-
-  .fgb <- function() {
-    default <- FALSE
-    fgb <- getOption('mapviewFgb')
-    if (is.null(fgb)) {
-      return(default)
-    } else {
-      return(fgb)
-    }
-  }
 
   ### 2. raster relevant options =====
 
   ## raster.palette -----
-  setRasterPalette <- function(raster.palette) {
+  setRasterPalette = function(raster.palette) {
     options(mapviewRasterPalette = raster.palette)
   }
 
-  .rasterPalette <- function() {
-    default <- mapviewPalette(name = "mapviewRasterColors")
-    rp <- getOption('mapviewRasterPalette')
+  .rasterPalette = function() {
+    default = mapviewPalette(name = "mapviewRasterColors")
+    rp = getOption('mapviewRasterPalette')
     if (is.null(rp)) {
       return(default)
     } else {
@@ -485,13 +473,13 @@ mapviewOptions <- function(platform,
   }
 
   ## raster.size -----
-  setRasterSize <- function(raster.size) {
+  setRasterSize = function(raster.size) {
     options(mapviewRasterSize = raster.size)
   }
 
-  .rasterSize <- function() {
-    default <- 8 * 1024 * 1024
-    rs <- getOption('mapviewRasterSize')
+  .rasterSize = function() {
+    default = 8 * 1024 * 1024
+    rs = getOption('mapviewRasterSize')
     if (is.null(rs)) {
       return(default)
     } else {
@@ -500,13 +488,13 @@ mapviewOptions <- function(platform,
   }
 
   ## mapview maxpixels -----
-  setMapviewMaxPixels <- function(mapview.maxpixels) {
+  setMapviewMaxPixels = function(mapview.maxpixels) {
     options(mapviewMaxPixels = mapview.maxpixels)
   }
 
-  .mapviewMaxpixels <- function() {
-    default <- 500000
-    mmp <- getOption('mapviewMaxPixels')
+  .mapviewMaxpixels = function() {
+    default = 500000
+    mmp = getOption('mapviewMaxPixels')
     if (is.null(mmp)) {
       return(default)
     } else {
@@ -515,13 +503,13 @@ mapviewOptions <- function(platform,
   }
 
   ## plainview maxpixels -----
-  setPlainviewMaxPixels <- function(plainview.maxpixels) {
+  setPlainviewMaxPixels = function(plainview.maxpixels) {
     options(plainviewMaxPixels = plainview.maxpixels)
   }
 
-  .plainviewMaxpixels <- function() {
-    default <- 10000000
-    pmp <- getOption('plainviewMaxPixels')
+  .plainviewMaxpixels = function() {
+    default = 10000000
+    pmp = getOption('plainviewMaxPixels')
     if (is.null(pmp)) {
       return(default)
     } else {
@@ -668,16 +656,31 @@ mapviewOptions <- function(platform,
     }
   }
 
+  ## georaster -----
+  setGeoraster = function(georaster) {
+    options(mapviewGeoRaster = georaster)
+  }
+
+  .georaster = function() {
+    default = FALSE
+    grst = getOption("mapviewGeoRaster")
+    if (is.null(grst)) {
+      return(default)
+    } else {
+      return(grst)
+    }
+  }
+
   ### 3. vector relevant options =====
 
   ## maxpolygons -----
-  setMaxPolygons <- function(maxpolygons) {
+  setMaxPolygons = function(maxpolygons) {
     options(mapviewMaxPolygons = maxpolygons)
   }
 
-  .maxpolygons <- function() {
-    default <- 30000
-    mp <- getOption('mapviewMaxPolygons')
+  .maxpolygons = function() {
+    default = 30000
+    mp = getOption('mapviewMaxPolygons')
     if (is.null(mp)) {
       return(default)
     } else {
@@ -686,13 +689,13 @@ mapviewOptions <- function(platform,
   }
 
   ## maxpoints -----
-  setMaxPoints <- function(maxpoints) {
+  setMaxPoints = function(maxpoints) {
     options(mapviewMaxPoints = maxpoints)
   }
 
-  .maxpoints <- function() {
-    default <- 20000
-    mp <- getOption('mapviewMaxPoints')
+  .maxpoints = function() {
+    default = 20000
+    mp = getOption('mapviewMaxPoints')
     if (is.null(mp)) {
       return(default)
     } else {
@@ -701,13 +704,13 @@ mapviewOptions <- function(platform,
   }
 
   ## maxlines -----
-  setMaxLines <- function(maxlines) {
+  setMaxLines = function(maxlines) {
     options(mapviewMaxLines = maxlines)
   }
 
-  .maxlines <- function() {
-    default <- 30000
-    ml <- getOption('mapviewMaxLines')
+  .maxlines = function() {
+    default = 30000
+    ml = getOption('mapviewMaxLines')
     if (is.null(ml)) {
       return(default)
     } else {
@@ -716,13 +719,13 @@ mapviewOptions <- function(platform,
   }
 
   ## vector.palette -----
-  setVectorPalette <- function(vector.palette) {
+  setVectorPalette = function(vector.palette) {
     options(mapviewVectorPalette = vector.palette)
   }
 
-  .vectorPalette <- function() {
-    default <- mapviewPalette(name = "mapviewVectorColors")
-    rp <- getOption('mapviewVectorPalette')
+  .vectorPalette = function() {
+    default = mapviewPalette(name = "mapviewVectorColors")
+    rp = getOption('mapviewVectorPalette')
     if (is.null(rp)) {
       return(default)
     } else {
@@ -775,14 +778,51 @@ mapviewOptions <- function(platform,
     }
   }
 
+  ## fgb ----
+  setFgb = function(fgb) {
+    if (mapviewGetOption("platform") %in% c("leafgl", "mapdeck") &&
+        isTRUE(fgb)) {
+      warning(
+        sprintf(
+          "option 'fgb' currently only works on platform %s. Setting fgb = FALSE"
+          , "'leaflet'"
+        )
+        , call. = FALSE
+      )
+      fgb = FALSE
+    }
+    v = sf::sf_extSoftVersion()
+    if (unname(v[names(v) == "GDAL"] <= "3.0.4")) {
+      warning(
+        sprintf(
+          "option 'fgb' requires GDAL >= 3.1.0! Your version is %s. Setting fgb = FALSE"
+          , v[names(v) == "GDAL"]
+        )
+        , call. = FALSE
+      )
+      fgb = FALSE
+    }
+    options(mapviewFgb = fgb)
+  }
+
+  .fgb = function() {
+    default = FALSE
+    fgb = getOption('mapviewFgb')
+    if (is.null(fgb)) {
+      return(default)
+    } else {
+      return(fgb)
+    }
+  }
+
 
   ### 4. default options =====
 
 
-  cnt <- 0
+  cnt = 0
 
   if (default) {
-    cnt <- 1
+    cnt = 1
 
     ## global
     options(mapviewPlatform = "leaflet")
@@ -791,6 +831,7 @@ mapviewOptions <- function(platform,
                                 "OpenStreetMap",
                                 "Esri.WorldImagery",
                                 "OpenTopoMap"))
+    options(mapviewBasemapsColorShuffle = TRUE)
     options(mapviewRasterPalette = mapviewPalette(name = "mapviewRasterColors"))
     options(mapviewVectorPalette = mapviewPalette(name = "mapviewVectorColors"))
     options(mapviewVerbose = FALSE)
@@ -806,7 +847,6 @@ mapviewOptions <- function(platform,
     options(mapviewHomebuttonPos = "bottomright")
     options(mapviewNativeCRS = FALSE)
     options(mapviewWatcher = FALSE)
-    options(mapviewFgb = FALSE)
 
     ## raster
     options(mapviewraster.size = 8 * 1024 * 1024)
@@ -819,6 +859,7 @@ mapviewOptions <- function(platform,
     options(mapviewQueryDigits = getOption("digits"))
     options(mapviewQueryPostion = "topright")
     options(mapviewQueryPrefix = "Layer")
+    options(mapviewGeoRaster = FALSE)
 
     ## vector
     options(mapviewMaxPolygons = 30000)
@@ -827,70 +868,76 @@ mapviewOptions <- function(platform,
     options(mapviewPane = "auto")
     options(mapviewCex = 0.6)
     options(mapviewAlpha = 0.9)
+    options(mapviewFgb = FALSE)
 
   }
 
 
   ## global
-  if (!missing(platform)) { setPlatform(platform); cnt <- cnt + 1 }
-  if (!missing(basemaps)) { setBasemaps(basemaps); cnt <- cnt + 1 }
+  if (!missing(platform)) { setPlatform(platform); cnt = cnt + 1 }
+  if (!missing(basemaps)) { setBasemaps(basemaps); cnt = cnt + 1 }
+  if (!missing(basemaps.color.shuffle)) {
+    setBasemapsShuffle(basemaps.color.shuffle); cnt = cnt + 1
+  }
   if (!missing(raster.palette)) {
-    setRasterPalette(raster.palette); cnt <- cnt + 1
+    setRasterPalette(raster.palette); cnt = cnt + 1
   }
   if (!missing(vector.palette)) {
-    setVectorPalette(vector.palette); cnt <- cnt + 1
+    setVectorPalette(vector.palette); cnt = cnt + 1
   }
-  if (!missing(verbose)) { setVerbose(verbose); cnt <- cnt + 1 }
-  if (!missing(na.color)) { setNAColor(na.color); cnt <- cnt + 1 }
-  if (!missing(legend)) { setLegend(legend); cnt <- cnt + 1 }
-  if (!missing(legend.opacity)) { setLegend(legend.opacity); cnt <- cnt + 1 }
-  if (!missing(legend.pos)) { setLegendPos(legend.pos); cnt <- cnt + 1 }
+  if (!missing(verbose)) { setVerbose(verbose); cnt = cnt + 1 }
+  if (!missing(na.color)) { setNAColor(na.color); cnt = cnt + 1 }
+  if (!missing(legend)) { setLegend(legend); cnt = cnt + 1 }
+  if (!missing(legend.opacity)) { setLegendOpacity(legend.opacity); cnt = cnt + 1 }
+  if (!missing(legend.pos)) { setLegendPos(legend.pos); cnt = cnt + 1 }
   if (!missing(layers.control.pos)) {
-    setLayersControlPos(layers.control.pos); cnt <- cnt + 1
+    setLayersControlPos(layers.control.pos); cnt = cnt + 1
   }
-  if (!missing(leafletWidth)) { setleafletWidth(leafletWidth); cnt <- cnt + 1 }
-  if (!missing(leafletHeight)) { setleafletHeight(leafletHeight); cnt <- cnt + 1 }
+  if (!missing(leafletWidth)) { setleafletWidth(leafletWidth); cnt = cnt + 1 }
+  if (!missing(leafletHeight)) { setleafletHeight(leafletHeight); cnt = cnt + 1 }
   if (!missing(viewer.suppress)) {
-    setViewerSuppress(viewer.suppress); cnt <- cnt + 1
+    setViewerSuppress(viewer.suppress); cnt = cnt + 1
   }
-  if (!missing(homebutton)) { setHomebutton(homebutton); cnt <- cnt + 1 }
-  if (!missing(homebutton.pos)) { setHomebuttonPos(homebutton.pos); cnt <- cnt + 1 }
-  if (!missing(native.crs)) { setNativeCRS(native.crs); cnt <- cnt + 1 }
-  if (!missing(watch)) { setWatcher(watch); cnt <- cnt + 1 }
-  if (!missing(fgb)) { setFgb(fgb); cnt <- cnt + 1 }
+  if (!missing(homebutton)) { setHomebutton(homebutton); cnt = cnt + 1 }
+  if (!missing(homebutton.pos)) { setHomebuttonPos(homebutton.pos); cnt = cnt + 1 }
+  if (!missing(native.crs)) { setNativeCRS(native.crs); cnt = cnt + 1 }
+  if (!missing(watch)) { setWatcher(watch); cnt = cnt + 1 }
 
 
   ## raster
-  if (!missing(raster.size)) { setRasterSize(raster.size); cnt <- cnt + 1 }
+  if (!missing(raster.size)) { setRasterSize(raster.size); cnt = cnt + 1 }
   if (!missing(mapview.maxpixels)) {
-    setMapviewMaxPixels(mapview.maxpixels); cnt <- cnt + 1
+    setMapviewMaxPixels(mapview.maxpixels); cnt = cnt + 1
   }
   if (!missing(plainview.maxpixels)) {
-    setPlainviewMaxPixels(plainview.maxpixels); cnt <- cnt + 1
+    setPlainviewMaxPixels(plainview.maxpixels); cnt = cnt + 1
   }
   if (!missing(use.layer.names)) {
-    setUseLayerNames(use.layer.names); cnt <- cnt + 1
+    setUseLayerNames(use.layer.names); cnt = cnt + 1
   }
-  if (!missing(trim)) { setTrim(trim); cnt <- cnt + 1 }
-  if (!missing(method)) { setInterpolationMethod(method); cnt <- cnt + 1 }
-  if (!missing(query.type)) { setQueryType(query.type); cnt <- cnt + 1 }
-  if (!missing(query.digits)) { setQueryDigits(query.digits); cnt <- cnt + 1 }
-  if (!missing(query.position)) { setQueryPosition(query.position); cnt <- cnt + 1 }
-  if (!missing(query.prefix)) { setQueryPrefix(query.prefix); cnt <- cnt + 1 }
+  if (!missing(trim)) { setTrim(trim); cnt = cnt + 1 }
+  if (!missing(method)) { setInterpolationMethod(method); cnt = cnt + 1 }
+  if (!missing(query.type)) { setQueryType(query.type); cnt = cnt + 1 }
+  if (!missing(query.digits)) { setQueryDigits(query.digits); cnt = cnt + 1 }
+  if (!missing(query.position)) { setQueryPosition(query.position); cnt = cnt + 1 }
+  if (!missing(query.prefix)) { setQueryPrefix(query.prefix); cnt = cnt + 1 }
+  if (!missing(georaster)) { setGeoraster(georaster); cnt = cnt + 1 }
 
   ## vector
-  if (!missing(maxpolygons)) { setMaxPolygons(maxpolygons); cnt <- cnt + 1 }
-  if (!missing(maxpoints)) { setMaxPoints(maxpoints); cnt <- cnt + 1 }
-  if (!missing(maxlines)) { setMaxLines(maxlines); cnt <- cnt + 1 }
-  if (!missing(pane)) { setPane(pane); cnt <- cnt + 1 }
-  if (!missing(cex)) { setCex(cex); cnt <- cnt + 1 }
-  if (!missing(alpha)) { setAlpha(alpha); cnt <- cnt + 1 }
+  if (!missing(maxpolygons)) { setMaxPolygons(maxpolygons); cnt = cnt + 1 }
+  if (!missing(maxpoints)) { setMaxPoints(maxpoints); cnt = cnt + 1 }
+  if (!missing(maxlines)) { setMaxLines(maxlines); cnt = cnt + 1 }
+  if (!missing(pane)) { setPane(pane); cnt = cnt + 1 }
+  if (!missing(cex)) { setCex(cex); cnt = cnt + 1 }
+  if (!missing(alpha)) { setAlpha(alpha); cnt = cnt + 1 }
+  if (!missing(fgb)) { setFgb(fgb); cnt = cnt + 1 }
 
-  lst <- list(
+  lst = list(
 
     ## global
     platform = .platform()
     , basemaps = .basemaps()
+    , basemaps.color.shuffle = .basemapsShuffle()
     , raster.palette = .rasterPalette()
     , vector.palette = .vectorPalette()
     , verbose = .verbose()
@@ -906,7 +953,6 @@ mapviewOptions <- function(platform,
     , homebutton.pos = .homebuttonPos()
     , native.crs = .nativeCRS()
     , watch = .watch()
-    , fgb = .fgb()
 
     ## raster
     , raster.size = .rasterSize()
@@ -919,6 +965,7 @@ mapviewOptions <- function(platform,
     , query.digits = .queryDigits()
     , query.position = .queryPosition()
     , query.prefix = .queryPrefix()
+    , georaster = .georaster()
 
     ## vector
     , maxpolygons = .maxpolygons()
@@ -927,6 +974,7 @@ mapviewOptions <- function(platform,
     , pane = .pane()
     , cex = .cex()
     , alpha = .alpha()
+    , fgb = .fgb()
 
   )
 
@@ -937,46 +985,48 @@ mapviewOptions <- function(platform,
 
       ## global
       cat("\n global options: \n\n")
-      cat('platform            :', lst$platform, '\n' )
-      cat('basemaps            :', lst$basemaps, '\n')
-      cat('raster.palette      :', format(.rasterPalette())[1], '\n')
-      cat('vector.palette      :', format(.vectorPalette())[1], '\n')
-      cat('verbose             :', lst$verbose, '\n')
-      cat('na.color            :', lst$na.color, '\n')
-      cat('legend              :', lst$legend, '\n')
-      cat('legend.opacity      :', lst$legend.opacity, '\n')
-      cat('legend.pos          :', lst$legend.pos, '\n')
-      cat('layers.control.pos  :', lst$layers.control.pos, '\n')
-      cat('leafletWidth        :', lst$leafletWidth, '\n')
-      cat('leafletHeight       :', lst$leafletHeight, '\n')
-      cat('viewer.suppress     :', lst$viewer.suppress, '\n')
-      cat('homebutton          :', lst$homebutton, '\n')
-      cat('homebutton.pos      :', lst$homebutton.pos, '\n')
-      cat('native.crs          :', lst$native.crs, '\n')
-      cat('watch               :', lst$watch, '\n')
-      cat('fgb                 :', lst$fgb, '\n')
+      cat('platform                :', lst$platform, '\n' )
+      cat('basemaps                :', lst$basemaps, '\n')
+      cat('basemaps.color.shuffle  :', lst$basemaps.color.shuffle, '\n')
+      cat('raster.palette          :', format(.rasterPalette())[1], '\n')
+      cat('vector.palette          :', format(.vectorPalette())[1], '\n')
+      cat('verbose                 :', lst$verbose, '\n')
+      cat('na.color                :', lst$na.color, '\n')
+      cat('legend                  :', lst$legend, '\n')
+      cat('legend.opacity          :', lst$legend.opacity, '\n')
+      cat('legend.pos              :', lst$legend.pos, '\n')
+      cat('layers.control.pos      :', lst$layers.control.pos, '\n')
+      cat('leafletWidth            :', lst$leafletWidth, '\n')
+      cat('leafletHeight           :', lst$leafletHeight, '\n')
+      cat('viewer.suppress         :', lst$viewer.suppress, '\n')
+      cat('homebutton              :', lst$homebutton, '\n')
+      cat('homebutton.pos          :', lst$homebutton.pos, '\n')
+      cat('native.crs              :', lst$native.crs, '\n')
+      cat('watch                   :', lst$watch, '\n')
 
       ## raster
       cat("\n raster data related options: \n\n")
-      cat('raster.size         :', lst$raster.size, '\n')
-      cat('mapview.maxpixels   :', lst$mapview.maxpixels, '\n')
-      cat('plainview.maxpixels :', lst$plainview.maxpixels, '\n')
-      cat('use.layer.names     :', lst$use.layer.names, '\n')
-      cat('trim                :', lst$trim, '\n')
-      cat('method              :', lst$method, '\n')
-      cat('query.type          :', lst$query.type, '\n')
-      cat('query.digits        :', lst$query.digits, '\n')
-      cat('query.position      :', lst$query.position, '\n')
-      cat('query.prefix        :', lst$query.prefix, '\n')
+      cat('raster.size             :', lst$raster.size, '\n')
+      cat('mapview.maxpixels       :', lst$mapview.maxpixels, '\n')
+      cat('plainview.maxpixels     :', lst$plainview.maxpixels, '\n')
+      cat('use.layer.names         :', lst$use.layer.names, '\n')
+      cat('trim                    :', lst$trim, '\n')
+      cat('method                  :', lst$method, '\n')
+      cat('query.type              :', lst$query.type, '\n')
+      cat('query.digits            :', lst$query.digits, '\n')
+      cat('query.position          :', lst$query.position, '\n')
+      cat('query.prefix            :', lst$query.prefix, '\n')
+      cat('georaster               :', lst$georaster, '\n')
 
       ## vector
-      cat("\n vector data realted options: \n\n")
-      cat('maxpolygons         :', lst$maxpolygons, '\n')
-      cat('maxpoints           :', lst$maxpoints, '\n')
-      cat('maxlines            :', lst$maxlines, '\n')
-      cat('pane                :', lst$pane, '\n')
-      cat('cex                 :', lst$cex, '\n')
-      cat('alpha               :', lst$alpha, '\n')
+      cat("\n vector data related options: \n\n")
+      cat('maxpolygons             :', lst$maxpolygons, '\n')
+      cat('maxpoints               :', lst$maxpoints, '\n')
+      cat('maxlines                :', lst$maxlines, '\n')
+      cat('pane                    :', lst$pane, '\n')
+      cat('cex                     :', lst$cex, '\n')
+      cat('alpha                   :', lst$alpha, '\n')
+      cat('fgb                     :', lst$fgb, '\n')
 
     }
   }
@@ -985,11 +1035,26 @@ mapviewOptions <- function(platform,
 
 }
 
-#' query single mapviewOption parameters
-#' @describeIn mapviewOptions query single mapviewOption parameters
-#' @param param character. parameter to be queried.
+#' query mapviewOptions parameters
+#' @describeIn mapviewOptions query mapviewOptions parameters.
+#' @param param character. parameter(s) to be queried.
 #' @export mapviewGetOption
-mapviewGetOption <- function(param) {
-  mapviewOptions(console = FALSE)[[param]]
+mapviewGetOption = function(param) {
+  if (length(param) == 1) {
+    return(
+      mapviewOptions(console = FALSE)[[param]]
+    )
+  }
+
+  if (length(param) > 1) {
+    return(
+      Map(
+        function(p) {
+          mapviewOptions(console = FALSE)[[p]]
+        }
+        , p = param
+      )
+    )
+  }
 }
 
