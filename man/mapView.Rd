@@ -57,6 +57,7 @@
   query.position = mapviewGetOption("query.position"),
   query.prefix = mapviewGetOption("query.prefix"),
   viewer.suppress = mapviewGetOption("viewer.suppress"),
+  hide = FALSE,
   ...
 )
 
@@ -86,6 +87,7 @@
   query.prefix = mapviewGetOption("query.prefix"),
   viewer.suppress = mapviewGetOption("viewer.suppress"),
   pane = "auto",
+  hide = FALSE,
   ...
 )
 
@@ -115,6 +117,7 @@
   query.prefix = mapviewGetOption("query.prefix"),
   viewer.suppress = mapviewGetOption("viewer.suppress"),
   pane = "auto",
+  hide = FALSE,
   ...
 )
 
@@ -139,6 +142,7 @@
   query.position = mapviewGetOption("query.position"),
   query.prefix = "Layer",
   viewer.suppress = mapviewGetOption("viewer.suppress"),
+  hide = FALSE,
   ...
 )
 
@@ -157,6 +161,7 @@
   homebutton = mapviewGetOption("homebutton"),
   method = c("bilinear", "ngb"),
   label = TRUE,
+  hide = FALSE,
   ...
 )
 
@@ -188,6 +193,7 @@
   native.crs = FALSE,
   highlight = mapviewHighlightOptions(x, alpha.regions, alpha, lwd),
   maxpoints = getMaxFeatures(x),
+  hide = FALSE,
   ...
 )
 
@@ -216,6 +222,7 @@
   native.crs = FALSE,
   highlight = mapviewHighlightOptions(x, alpha.regions, alpha, lwd),
   maxpoints = getMaxFeatures(x),
+  hide = FALSE,
   ...
 )
 
@@ -281,6 +288,7 @@
   native.crs = FALSE,
   highlight = mapviewHighlightOptions(x, alpha.regions, alpha, lwd),
   maxpoints = getMaxFeatures(x),
+  hide = FALSE,
   ...
 )
 
@@ -323,6 +331,7 @@
   legend = mapviewGetOption("legend"),
   homebutton = mapviewGetOption("homebutton"),
   native.crs = FALSE,
+  hide = FALSE,
   ...
 )
 
@@ -353,6 +362,7 @@
   query.position = "topright",
   query.prefix = "Layer",
   viewer.suppress = mapviewGetOption("viewer.suppress"),
+  hide = FALSE,
   ...
 )
 
@@ -381,6 +391,7 @@
   query.position = "topright",
   query.prefix = "Layer",
   viewer.suppress = mapviewGetOption("viewer.suppress"),
+  hide = FALSE,
   ...
 )
 
@@ -476,6 +487,8 @@ as prefix for the layerId. Ignored if \code{label = FALSE}.}
 \item{viewer.suppress}{deprecated.
 Use \code{mapviewOptions(viewer.suppress = TRUE/FALSE)} instead.}
 
+\item{hide}{if TRUE the layer will be hidden (i.e. unchecked) in the rendered map.}
+
 \item{...}{additional arguments passed on to respective functions.
 See \code{\link{addRasterImage}}, \code{\link{addCircles}},
 \code{\link{addPolygons}}, \code{\link{addPolylines}} for details.
@@ -492,7 +505,7 @@ a list of supported hidden arguments.}
   are rendered in the same pane and layer order is determined automatically/sequentially.}
 
 \item{canvas}{whether to use canvas rendering rather than svg. May help
-performance with larger data. See \url{https://leafletjs.com/reference-1.6.0.html#canvas}
+performance with larger data. See \url{https://leafletjs.com/SlavaUkraini/reference.html#canvas}
 for more information. Only applicable for vector data. The default setting will
 decide automatically, based on feature complexity.}
 

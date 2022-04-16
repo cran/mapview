@@ -335,7 +335,7 @@ is_literally_false = function(x) {
 
 listifyer = function(x, by_row = FALSE) {
   if (by_row) {
-    strct = sapply(x, function(i) {
+    strct = lapply(x, function(i) {
       if (inherits(i, "sfc")) {
         length(i)
       }
@@ -354,7 +354,7 @@ listifyer = function(x, by_row = FALSE) {
         if (length(arg) > 1 && length(arg) <= length(idx)) {
           splt = split(arg, idx)
           if (arg_nm == "popup") {
-            splt = sapply(splt, function(i) {
+            splt = lapply(splt, function(i) {
               attr(i, "popup") = "leafpop"
               return(i)
             })
@@ -395,4 +395,11 @@ useFgb = function() {
     interactive() && # an interactive session
     !isTRUE(getOption("rstudio.notebook.executing")) && # Not running in an RStudio notebook chunk
     !isTRUE(getOption("knitr.in.progress")) # Not actively knitting a document
+}
+
+isCog = function(x) {
+  all(
+    grepl("(^\\/vsicurl||^http||^https)\\://", x)
+    , grepl("\\.(tiff||tif)$", x)
+  )
 }

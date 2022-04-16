@@ -1,3 +1,35 @@
+## mapview 2.11.0 (2022-04-16)
+
+#### ✨ features and improvements
+
+#### 🐛 bug fixes
+
+  * when `burst = TRUE` popups were not correct. #396 & #408
+  * recreated data crs with `sf::st_crs()` to avoid warnings ('old-style crs object detected; please recreate object with a recent sf::st_crs()'). #411
+  * `RasterBrick` method now returns correct `@object` slot.
+
+#### 💬 documentation etc
+
+#### 🍬 miscellaneous
+
+
+## mapview 2.10.4
+
+new features:
+
+  * all methods now have a `hide` argument to hide layers at the first render.
+
+## mapview 2.10.3
+
+new features:
+
+  * use interpolated numeric legend also if number of unique values <= 11. #389
+
+bugfixes:
+
+  * stars image now renders correctly if supplying only a few colors. #388
+  * data now appears in maps when using default settings with VSCode R extension.
+
 ## mapview 2.10.0
 
 new features:

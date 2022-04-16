@@ -24,13 +24,14 @@ sfFgb = function(x,
                  attributes,
                  canvas,
                  viewer.suppress,
+                 hide,
                  ...) {
 
   if (is_literally_false(popup)) popup = NULL
-  if (!(is.null(attr(popup, "popup"))) &&
-      attr(popup, "popup") == "leafpop") {
-    popup = TRUE
-  }
+  # if (!(is.null(attr(popup, "popup"))) &&
+  #     attr(popup, "popup") == "leafpop") {
+  #   popup = TRUE
+  # }
 
   if (!native.crs) x <- checkAdjustProjection(x)
   if (is.na(sf::st_crs(x)$proj4string)) native.crs <- TRUE
@@ -252,6 +253,10 @@ sfFgb = function(x,
 
   if (is.function(legend)) m <- legend(m)
   m = removeDuplicatedMapDependencies(m)
+
+  if (hide) {
+    m = leaflet::hideGroup(m, layer.name)
+  }
 
   bb = unname(sf::st_bbox(x))
 
