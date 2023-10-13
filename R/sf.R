@@ -575,16 +575,12 @@ leaflet_sfc <- function(x,
     viewer.suppress = viewer.suppress
   )
 
-  if (!canvas) {
-    if (!is.null(pane)) {
-      if (pane == "auto") {
-        pane = paneName(x)
-        zindex = zIndex(x)
-        m = leaflet::addMapPane(m, pane, zindex)
-      }
+  if (!is.null(pane)) {
+    if (pane == "auto") {
+      pane = paneName(x)
+      zindex = zIndex(x)
+      m = leaflet::addMapPane(m, pane, zindex)
     }
-  } else {
-    pane = NULL
   }
 
   if (mapviewGetOption("fgb")) {
@@ -643,7 +639,7 @@ leaflet_sfc <- function(x,
     if ("gl" %in% names(list(...)) &
         isTRUE(list(...)$gl) &
         inherits(sf::st_geometry(x), "sfc_POLYGON") &
-        lwd > 0) {
+        all(lwd > 0)) {
       m = leafem::addFeatures(
         m
         , data = suppressWarnings(sf::st_cast(x, "LINESTRING"))

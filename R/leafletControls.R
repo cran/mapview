@@ -184,7 +184,7 @@ removeDuplicatedMapDependencies <- function(map) {
 
 
 
-rasterCheckSize <- function(x, maxpixels) {
+rasterCheckSize<- function(x, maxpixels) {
   if (maxpixels < raster::ncell(x)) {
     warning(paste("maximum number of pixels for Raster* viewing is",
                   maxpixels, "; \nthe supplied Raster* has", ncell(x), "\n",
@@ -236,6 +236,7 @@ initBaseMaps <- function(map.types, canvas = FALSE, viewer.suppress = FALSE) {
                                        options = providerTileOptions(
                                          pane = "tilePane"
                                        ))
+        m = removeDuplicatedMapDependencies(m)
       }
     }
   }

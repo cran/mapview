@@ -6,9 +6,11 @@
 \alias{mapView,RasterLayer-method}
 \alias{mapView,stars-method}
 \alias{mapView,stars_proxy-method}
+\alias{mapView,SpatRaster-method}
 \alias{mapView,RasterStackBrick-method}
 \alias{mapView,Satellite-method}
 \alias{mapView,sf-method}
+\alias{mapView,SpatVector-method}
 \alias{mapView,sfc-method}
 \alias{mapView,character-method}
 \alias{mapView,numeric-method}
@@ -121,6 +123,36 @@
   ...
 )
 
+\S4method{mapView}{SpatRaster}(
+  x,
+  band = 1,
+  map = NULL,
+  maxpixels = mapviewGetOption("mapview.maxpixels"),
+  col.regions = mapviewGetOption("raster.palette"),
+  at = NULL,
+  na.color = mapviewGetOption("na.color"),
+  use.layer.names = mapviewGetOption("use.layer.names"),
+  map.types = mapviewGetOption("basemaps"),
+  alpha.regions = 0.8,
+  legend = mapviewGetOption("legend"),
+  legend.opacity = 1,
+  trim = mapviewGetOption("trim"),
+  verbose = mapviewGetOption("verbose"),
+  layer.name = NULL,
+  homebutton = mapviewGetOption("homebutton"),
+  native.crs = mapviewGetOption("native.crs"),
+  method = mapviewGetOption("method"),
+  label = TRUE,
+  query.type = mapviewGetOption("query.type"),
+  query.digits = mapviewGetOption("query.digits"),
+  query.position = mapviewGetOption("query.position"),
+  query.prefix = mapviewGetOption("query.prefix"),
+  viewer.suppress = mapviewGetOption("viewer.suppress"),
+  pane = "auto",
+  hide = FALSE,
+  ...
+)
+
 \S4method{mapView}{RasterStackBrick}(
   x,
   map = NULL,
@@ -166,6 +198,38 @@
 )
 
 \S4method{mapView}{sf}(
+  x,
+  map = NULL,
+  pane = "auto",
+  canvas = useCanvas(x),
+  viewer.suppress = mapviewGetOption("viewer.suppress"),
+  zcol = NULL,
+  burst = FALSE,
+  color = mapviewGetOption("vector.palette"),
+  col.regions = mapviewGetOption("vector.palette"),
+  at = NULL,
+  na.color = mapviewGetOption("na.color"),
+  cex = 6,
+  lwd = lineWidth(x),
+  alpha = 0.9,
+  alpha.regions = regionOpacity(x),
+  na.alpha = regionOpacity(x),
+  map.types = mapviewGetOption("basemaps"),
+  verbose = mapviewGetOption("verbose"),
+  popup = TRUE,
+  layer.name = NULL,
+  label = zcol,
+  legend = mapviewGetOption("legend"),
+  legend.opacity = 1,
+  homebutton = mapviewGetOption("homebutton"),
+  native.crs = FALSE,
+  highlight = mapviewHighlightOptions(x, alpha.regions, alpha, lwd),
+  maxpoints = getMaxFeatures(x),
+  hide = FALSE,
+  ...
+)
+
+\S4method{mapView}{SpatVector}(
   x,
   map = NULL,
   pane = "auto",
@@ -505,7 +569,7 @@ a list of supported hidden arguments.}
   are rendered in the same pane and layer order is determined automatically/sequentially.}
 
 \item{canvas}{whether to use canvas rendering rather than svg. May help
-performance with larger data. See \url{https://leafletjs.com/SlavaUkraini/reference.html#canvas}
+performance with larger data. See \url{https://leafletjs.com/index.html#canvas}
 for more information. Only applicable for vector data. The default setting will
 decide automatically, based on feature complexity.}
 
@@ -602,59 +666,63 @@ the popup will potentially still say something like "POLYGON Z".
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{stars}: \code{stars}
+\item \code{mapView(stars)}: \code{stars}
 
-\item \code{stars_proxy}: \code{stars_proxy}
+\item \code{mapView(stars_proxy)}: \code{stars_proxy}
 
-\item \code{RasterStackBrick}: \code{\link{stack}} / \code{\link{brick}}
+\item \code{mapView(SpatRaster)}: \code{SpatRaster}
 
-\item \code{Satellite}: \code{\link{satellite}}
+\item \code{mapView(RasterStackBrick)}: \code{\link{stack}} / \code{\link{brick}}
 
-\item \code{sf}: \code{\link{st_sf}}
+\item \code{mapView(Satellite)}: \code{\link{satellite}}
 
-\item \code{sfc}: \code{\link{st_sfc}}
+\item \code{mapView(sf)}: \code{sf}
 
-\item \code{character}: \code{\link{character}}
+\item \code{mapView(SpatVector)}: \code{SpatVector}
 
-\item \code{numeric}: \code{\link{numeric}}
+\item \code{mapView(sfc)}: \code{\link{st_sfc}}
 
-\item \code{data.frame}: \code{\link{data.frame}}
+\item \code{mapView(character)}: \code{\link{character}}
 
-\item \code{XY}: \code{\link{st_sfc}}
+\item \code{mapView(numeric)}: \code{\link{numeric}}
 
-\item \code{XYZ}: \code{\link{st_sfc}}
+\item \code{mapView(data.frame)}: \code{\link{data.frame}}
 
-\item \code{XYM}: \code{\link{st_sfc}}
+\item \code{mapView(XY)}: \code{\link{st_sfc}}
 
-\item \code{XYZM}: \code{\link{st_sfc}}
+\item \code{mapView(XYZ)}: \code{\link{st_sfc}}
 
-\item \code{bbox}: \code{\link{st_bbox}}
+\item \code{mapView(XYM)}: \code{\link{st_sfc}}
 
-\item \code{missing}: initiate a map without an object
+\item \code{mapView(XYZM)}: \code{\link{st_sfc}}
 
-\item \code{NULL}: initiate a map without an object
+\item \code{mapView(bbox)}: \code{\link{st_bbox}}
 
-\item \code{list}: \code{\link{list}}
+\item \code{mapView(missing)}: initiate a map without an object
 
-\item \code{ANY}: alias for ease of typing
+\item \code{mapView(`NULL`)}: initiate a map without an object
 
-\item \code{SpatialPixelsDataFrame}: \code{\link{SpatialPixelsDataFrame}}
+\item \code{mapView(list)}: \code{\link{list}}
 
-\item \code{SpatialGridDataFrame}: \code{\link{SpatialGridDataFrame}}
+\item \code{mapview(ANY)}: alias for ease of typing
 
-\item \code{SpatialPointsDataFrame}: \code{\link{SpatialPointsDataFrame}}
+\item \code{mapView(SpatialPixelsDataFrame)}: \code{\link{SpatialPixelsDataFrame}}
 
-\item \code{SpatialPoints}: \code{\link{SpatialPoints}}
+\item \code{mapView(SpatialGridDataFrame)}: \code{\link{SpatialGridDataFrame}}
 
-\item \code{SpatialPolygonsDataFrame}: \code{\link{SpatialPolygonsDataFrame}}
+\item \code{mapView(SpatialPointsDataFrame)}: \code{\link{SpatialPointsDataFrame}}
 
-\item \code{SpatialPolygons}: \code{\link{SpatialPolygons}}
+\item \code{mapView(SpatialPoints)}: \code{\link{SpatialPoints}}
 
-\item \code{SpatialLinesDataFrame}: \code{\link{SpatialLinesDataFrame}}
+\item \code{mapView(SpatialPolygonsDataFrame)}: \code{\link{SpatialPolygonsDataFrame}}
 
-\item \code{SpatialLines}: \code{\link{SpatialLines}}
+\item \code{mapView(SpatialPolygons)}: \code{\link{SpatialPolygons}}
+
+\item \code{mapView(SpatialLinesDataFrame)}: \code{\link{SpatialLinesDataFrame}}
+
+\item \code{mapView(SpatialLines)}: \code{\link{SpatialLines}}
+
 }}
-
 \examples{
 \dontrun{
   mapview()
