@@ -3,9 +3,9 @@
 \docType{package}
 \name{mapview-package}
 \alias{mapview-package}
-\title{Interactive viewing of spatial objects in R}
+\title{mapview: Interactive Viewing of Spatial Data in R}
 \description{
-Interactive viewing of spatial objects in R
+Quickly and conveniently create interactive visualisations of spatial data with or without background maps. Attributes of displayed features are fully queryable via pop-up windows. Additional functionality includes methods to visualise true- and false-color raster images and bounding boxes.
 }
 \details{
 The package provides functionality to view spatial objects interactively.
@@ -13,11 +13,37 @@ The intention is to provide interactivity for easy and quick visualization
 during spatial data analysis. It is not intended for fine-tuned presentation
 quality map production.
 }
-\author{
-Tim Appelhans, Florian Detsch, Chris Reudenbach,
-Stephan Woellauer, Spaska Forteva, Thomas Nauss,
-Environmental Informatics Marburg \cr
-\cr
-\emph{Maintainer:} Tim Appelhans \email{tim.appelhans@gmail.com}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/r-spatial/mapview}
+  \item \url{https://r-spatial.github.io/mapview/}
+  \item Report bugs at \url{https://github.com/r-spatial/mapview/issues}
 }
-\keyword{package}
+
+}
+\author{
+\strong{Maintainer}: Tim Appelhans \email{tim.appelhans@gmail.com}
+
+Authors:
+\itemize{
+  \item Florian Detsch \email{fdetsch@web.de}
+  \item Christoph Reudenbach \email{reudenbach@geo.uni-marburg.de}
+  \item Stefan Woellauer \email{stephan.woellauer@geo.uni-marburg.de}
+}
+
+Other contributors:
+\itemize{
+  \item Spaska Forteva \email{spaska.forteva@geo.uni-marburg.de} [contributor]
+  \item Thomas Nauss \email{nauss@staff.uni-marburg.de} [contributor]
+  \item Edzer Pebesma [contributor]
+  \item Kenton Russell [contributor]
+  \item Michael Sumner [contributor]
+  \item Jochen Darley \email{Debugger@jedimasters.de} [contributor]
+  \item Pierre Roudier [contributor]
+  \item Patrick Schratz [contributor]
+  \item Environmental Informatics Marburg [contributor]
+  \item Lorenzo Busetto [contributor]
+}
+
+}

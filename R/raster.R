@@ -157,7 +157,7 @@ leafletRL = function(x,
     if (scalebar) m = leaflet::addScaleBar(m, position = "bottomleft")
     m = leafem::addMouseCoordinates(m)
     m = leafem::addCopyExtent(m)
-    if (homebutton) m = leafem::addHomeButton(m, ext, group = layer.name)
+    if (homebutton) m = leafem::addHomeButton(m, ext, group = gsub("[[:punct:] ]", "_", layer.name))
 
     if (hide) {
       m = leaflet::hideGroup(m, layer.name)
@@ -270,13 +270,30 @@ leafletRSB = function(x,
                   ...)
     }
 
-    # if (length(getLayerNamesFromMap(m@map)) > 1) {
-    #   m = leaflet::hideGroup(map = m@map,
-    #                          group = layers2bHidden(m@map, ...))
-    # }
-    if (hide) {
-      m = leaflet::hideGroup(m@map, layer.name)
+    # check if we wanna hide something
+    if (!isFALSE(hide)) {
+      # if TRUE hide all but first
+      if (isTRUE(hide)) {
+        m@map = leaflet::hideGroup(
+          map = m@map
+          , group = layers2bHidden(m@map, hide)
+        )
+      # otherwise hide what is specified in `hide`
+      } else {
+        nms = getLayerNamesFromMap(m@map)
+        if (is.character(hide)) {
+          nms = intersect(nms, hide)
+        }
+        if (is.numeric(hide)) {
+          nms = nms[hide]
+        }
+        m@map = leaflet::hideGroup(
+          map = m@map
+          , group = nms
+        )
+      }
     }
+
 
     out = new('mapview', object = list(x), map = m@map)
   }

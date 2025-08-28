@@ -16,13 +16,13 @@
 
 \S4method{+}{mapview,ANY}(e1, e2)
 
-\S4method{+}{mapview,`NULL`}(e1, e2)
+\S4method{+}{mapview,NULL}(e1, e2)
 
 \S4method{+}{mapview,character}(e1, e2)
 
-\S4method{|}{mapview,`NULL`}(e1, e2)
+\S4method{|}{mapview,NULL}(e1, e2)
 
-\S4method{|}{`NULL`,mapview}(e1, e2)
+\S4method{|}{NULL,mapview}(e1, e2)
 }
 \arguments{
 \item{e1}{a leaflet or mapview map, or NULL.}
@@ -36,7 +36,7 @@ mapview + data adds spatial data (raster*, sf*, sp*) to a mapview map
 
 mapview + NULL returns the LHS map
 
-[...]
+\link{...}
 
 mapview | mapview provides a slider in the middle to compare two maps.
 
