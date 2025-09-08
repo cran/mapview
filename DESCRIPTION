@@ -1,6 +1,6 @@
 Package: mapview
 Title: Interactive Viewing of Spatial Data in R
-Version: 2.11.3
+Version: 2.11.4
 Authors@R: 
     c(person(given = "Tim",
              family = "Appelhans",
@@ -73,7 +73,7 @@ LazyData: TRUE
 RoxygenNote: 7.3.2
 SystemRequirements: GNU make
 NeedsCompilation: no
-Packaged: 2025-08-28 08:27:03 UTC; tim
+Packaged: 2025-09-05 08:14:37 UTC; tim
 Author: Tim Appelhans [cre, aut],
   Florian Detsch [aut],
   Christoph Reudenbach [aut],
@@ -89,4 +89,4 @@ Author: Tim Appelhans [cre, aut],
   Environmental Informatics Marburg [ctb],
   Lorenzo Busetto [ctb]
 Repository: CRAN
-Date/Publication: 2025-08-28 12:20:12 UTC
+Date/Publication: 2025-09-08 07:00:18 UTC

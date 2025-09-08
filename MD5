@@ -1,9 +1,9 @@
-eccd2845ea31384f5d117d66f4055553 *DESCRIPTION
+e8a950147f518c4a3c5e5f6fea29e53c *DESCRIPTION
 7702f203b58979ebbc31bfaeb44f219c *LICENSE
 05e8c59860db84338fabbb27699262a0 *NAMESPACE
-dbd6374cc389aa31a727861462853d46 *NEWS
-87cd8a8ff617fcc388920d2012fb3d89 *NEWS.md
-85d2f7b81568f7780993d33bfe6cc67c *R/AAAmapviewClasses.R
+9ef4dbc9d3e95e9f65f62978613aec29 *NEWS
+e1b14fa90252e5a414c0370b3663ce43 *NEWS.md
+4970c5b045402350374b06de39b79a2e *R/AAAmapviewClasses.R
 2835fa333519b96b962b6fdff45e132b *R/burst.R
 05aa3f779743ee8516e4ce07f96cfe11 *R/color.R
 4c2aa712e167f3bf2dec274690da0b03 *R/cubeView.R
@@ -47,8 +47,8 @@ e46a74e49c100c9ffd36527620ebb2f3 *inst/htmlwidgets/lib/css/mapview.css
 fc14cc562601f384e19c8d9b0c492104 *inst/templates/popup-graph.brew
 6cdf20b7fb1c4d9f4d9f9e655f48bcbb *inst/templates/popup.brew
 f4bc74b9a4c77903bf027c52a6651933 *inst/tinytest/test-color.R
-2569961b8d84f7ce4c93c243a0538ba2 *inst/tinytest/test-mapview.R
-898529cb1363d5739d77762137429d32 *inst/tinytest/test-mapviewControls.R
+311a322271ee5a1239798eb2064c1390 *inst/tinytest/test-mapview.R
+54111d34597f82fcf06db314370f6e2f *inst/tinytest/test-mapviewControls.R
 a7c6b6633c155d51cc76479e4b96e6e0 *man/breweries.Rd
 a559d28c1e6d98a1cc6dc5cf853e05b9 *man/figures/basic_small.png
 9bf888cfa42ede82ede57c8a39ca0803 *man/franconia.Rd
@@ -69,6 +69,6 @@ f9a5324b30631f613fc6fb6e3ba08a43 *man/removeMapJunk.Rd
 95ee9f2e3a492579d0b4806ae8b1cac2 *man/renderMapview.Rd
 fdb7809b57b7942b231b74025cebc2bc *man/show-mapview-method.Rd
 a7da8a2636207c40783a71a27f736547 *man/trails.Rd
-39f2e9de0ca5f588cb351fcbe36f879d *man/viewExtent.Rd
+4e290bb83092ff47b21bb81e577dc273 *man/viewExtent.Rd
 46decc25f7919ad2fb6f13ae5d08a652 *man/viewRGB.Rd
 8af34a31246c4b62268c6903612567fd *tests/tinytest.R
